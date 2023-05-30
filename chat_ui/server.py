@@ -2,6 +2,7 @@ import time
 import socket
 import threading
 
+#Eboisky 2023
 
 class Server:
     def __init__(self, ip, port):
