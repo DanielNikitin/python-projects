@@ -32,8 +32,8 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setFont(font)
         self.plainTextEdit.setFocusPolicy(QtCore.Qt.NoFocus)
         self.plainTextEdit.setStyleSheet("QPlainTextEdit {\n"
-"border: 1px solid black;\n"
-"}")
+                                         "border: 1px solid black;\n"
+                                         "}")
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.pushButton_4 = QtWidgets.QPushButton(self.tab)
         self.pushButton_4.setGeometry(QtCore.QRect(10, 330, 431, 41))
