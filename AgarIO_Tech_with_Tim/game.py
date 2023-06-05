@@ -47,10 +47,6 @@ def convert_time(t):
 
 
 def redraw_window(players, balls, game_time, score):
-	"""
-	draws each frame
-	:return: None
-	"""
 	WIN.fill((255,255,255)) # fill screen white, to clear old frames
 	
 		# draw all the orbs/balls
@@ -86,13 +82,6 @@ def redraw_window(players, balls, game_time, score):
 
 
 def main(name):
-	"""
-	function for running the game,
-	includes the main loop of the game
-
-	:param players: a list of dicts represting a player
-	:return: None
-	"""
 	global players
 
 	# start by connecting to the network
@@ -105,7 +94,8 @@ def main(name):
 
 	run = True
 	while run:
-		clock.tick(120) # 30 fps max
+		print('game is runned')
+		clock.tick(30) # 30 fps max
 		player = players[current_id]
 		vel = START_VEL - round(player["score"]/14)
 		if vel <= 1:

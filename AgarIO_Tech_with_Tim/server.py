@@ -8,7 +8,6 @@ import math
 # setup sockets
 S = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 S.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-#S.setblocking(False)
 
 # Set constants
 SERVER_IP = 'localhost'
@@ -157,13 +156,6 @@ def get_start_location(players):
 
 
 def threaded_client(conn, _id):
-	"""
-	runs in a new thread for each player connected to the server
-
-	:param con: ip address of connection
-	:param _id: int
-	:return: None
-	"""
 	global connections, players, balls, game_time, nxt, start
 
 	current_id = _id
@@ -270,10 +262,10 @@ print("[SERVER] Waiting for connections")
 while True:
 	
 	host, addr = S.accept()
-	print("[CONNECTION] Connected to:", addr)
+	print("[CONNECTION] Connected to: 1111", addr)
 
 	# start game when a client on the server computer connects
-	if addr[0] == SERVER_IP and not(start):
+	if addr[0] == SERVER_IP and not start:
 		start = True
 		start_time = time.time()
 		print("[STARTED] Game Started")
@@ -282,8 +274,3 @@ while True:
 	connections += 1
 	start_new_thread(threaded_client,(host,_id))
 	_id += 1
-
-# when program ends
-pygame.quit()
-S.close()
-print("[SERVER] Server offline")

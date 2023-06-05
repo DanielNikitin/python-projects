@@ -5,7 +5,7 @@ import _pickle as pickle
 class Network:
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #self.client.settimeout(10.0)
+        self.client.settimeout(10.0)
         self.host = "localhost"
         self.port = 10000
         self.addr = (self.host, self.port)
@@ -14,6 +14,7 @@ class Network:
         self.client.connect(self.addr)
         self.client.send(str.encode(name))
         val = self.client.recv(8)
+        print('connected')
         return int(val.decode()) # can be int because will be an int id
 
     def disconnect(self):
