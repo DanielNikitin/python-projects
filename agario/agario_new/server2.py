@@ -47,7 +47,7 @@ while running:
     #--ПРОВЕРЯЕМ ПОДКЛЮЧЕНИЕ НОВОГО КЛИЕНТА--
     try:
         new_socket, addr = main_socket.accept()
-        new_socket.setblocking(False)
+        #new_socket.setblocking(False)
         player_sockets.append(new_socket)
         print('SERVER:', addr, 'connected')
     except:

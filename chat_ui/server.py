@@ -13,7 +13,7 @@ class Server:
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.ip, self.port))
         self.server.listen(0)
-        # Поток connect_handler для отслеживания нового соединения
+        # Поток connect_handler для отслеживания нового  соединения
         threading.Thread(target=self.connect_handler).start()
         print('****SERVER STARTED****')
 

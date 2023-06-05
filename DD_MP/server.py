@@ -1,140 +1,84 @@
 import socket
-from _thread import *
-import _pickle as pickle
-import time
-import random
-import math
+import threading
+#import time
+#import _pickle as pickle
+#import random
+#import math
+import pygame
 
-# Set constants
+# Constants
 SERVER_IP = 'localhost'
 PORT = 10000
 
-# Создание сокета
-S = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-S.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-S.setblocking(False)
-
 W, H = 1600, 830
+WIDHT_SERVER_WINDOW, HEIGHT_SERVER_ROOM = 300, 300  # Серверное окно
 
 START_RADIUS = 7
 
-# try to connect to server
-try:
-	S.bind((SERVER_IP, PORT))
-except socket.error as e:
-	print(str(e))
-	print("[SERVER] Server could not start")
-	quit()
+pygame.init()  # запуск pygame
+screen = pygame.display.set_mode((WIDHT_SERVER_WINDOW, HEIGHT_SERVER_ROOM))
+clock = pygame.time.Clock()
 
-S.listen()  # listen for connections
+# Dynamic variables
+balls = []
+connections = 0 # общее кол-во подключенных игроков
+_id = 0 # id игрока
+colors = [(255, 0, 0), (255, 128, 0), (255, 255, 0), (128, 255, 0),
+          (0, 255, 0), (0, 255, 128), (0, 255, 255), (0, 128, 255),
+          (0, 0, 255), (0, 0, 255), (128, 0, 255), (255, 0, 255),
+          (255, 0, 128), (128, 128, 128), (0, 0, 0)]
 
-print(f"[SERVER] Server Started with ip: {SERVER_IP}")
-
-# dynamic variables
-players = {}
-connections = 0
-_id = 0
-colors = [(255,0,0), (255, 128, 0), (255,255,0),
-		  (128,255,0),(0,255,0),(0,255,128),(0,255,255),
-		  (0, 128, 255), (0,0,255), (0,0,255), (128,0,255),
-		  (255,0,255), (255,0,128),(128,128,128), (0,0,0)]
-start = False
-stat_time = 0
+start_time = 0
 game_time = "Starting Soon"
+nxt = 1
 
-def get_start_location(players):
-	while True:
-		x = random.randrange(0,W)
-		y = random.randrange(0,H)
-	#return x, y
 
-def threaded_client(conn, _id):
-	global connections, players, balls, game_time, nxt, start
+class Server:
+    def __init__(self, ip, port):
+        self.ip = ip
+        self.port = port
+        self.players = {}
 
-	current_id = _id
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind((self.ip, self.port))
+        self.server.listen()
 
-	# recieve a name from the client
-	data = conn.recv(16)
-	name = data.decode("utf-8")
-	print("[LOG]", name, "connected to the server.")
+        threading.Thread(target=self.connect_handler).start()
 
-	# Setup properties for each new player
-	color = colors[current_id]
-	x, y = get_start_location(players)
-	players[current_id] = {"x":x, "y":y,"color":color,"score":0,"name":name}  # x, y color, score, name
+        print(f"[SERVER] Server Prepare Config for Start with IP: {SERVER_IP}")
 
-	# pickle data and send initial info to clients
-	conn.send(str.encode(str(current_id)))
+    # Обрабатываем входящие соединения (connect_handler)
+    def connect_handler(self):
+        while True:
+            try:
+                # Принимаем запрос нового клиента
+                new_client, address = self.server.accept()
+                new_client.setblocking(False)
+                # Получаем идентификатор клиента
+                data = new_client.recv(1024)
+                name = data.decode("utf-8")
+                _id = int(data.decode("utf-8"))
+            except:
+                pass
 
-	# server will recieve basic commands from client
-	# it will send back all of the other clients info
-	'''
-	commands start with:
-	move
-	jump
-	get
-	id - returns id of client
-	'''
-	while True:
-		try:
-			# Recieve data from client
-			data = conn.recv(32)
+            if new_client not in self.players:
+                self.players[new_client] = _id
+                _id += 1
+                print("[LOG]", _id, "connected to the server.")
+                print("Connections:", connections, "ID:", _id)
+                new_client.send(str(_id).encode('utf-8'))
 
-			if not data:
-				break
+            #color = colors[_id]
+            #self.players[_id] = {"color":color, "score":0, "name":name}
 
-			data = data.decode("utf-8")
-			#print("[DATA] Recieved", data, "from client id:", current_id)
+            # pickle data and send initial info to clients
+            #client.send(str.encode(str(current_id)))
 
-			# look for specific commands from recieved data
-			if data.split(" ")[0] == "move":
-				split_data = data.split(" ")
-				x = int(split_data[1])
-				y = int(split_data[2])
-				players[current_id]["x"] = x
-				players[current_id]["y"] = y
-
-			elif data.split(" ")[0] == "id":
-				send_data = str.encode(str(current_id))  # if user requests id then send it
-
-			elif data.split(" ")[0] == "jump":
-				send_data = pickle.dumps((balls,players, game_time))
-			else:
-				# any other command just send back list of players
-				send_data = pickle.dumps((balls,players, game_time))
-
-			# send data back to clients
-			conn.send(send_data)
-
-		except Exception as e:
-			print(e)
-			break  # if an exception has been reached disconnect client
-
-		time.sleep(0.001)
-
-	# When user disconnects
-	print("[DISCONNECT] Name:", name, ", Client Id:", current_id, "disconnected")
-
-	connections -= 1
-	del players[current_id]  # remove client information from players list
-	conn.close()  # close connection
-
-# MAINLOOP
-
-# Keep looping to accept new connections
-print("[SERVER] Waiting for connections")
-while True:
-
-	host, addr = S.accept()
-	print("[CONNECTION] Connected to: 1111", addr)
-
-	# start game when a client on the server computer connects
-	if addr[0] == SERVER_IP and not start:
-		start = True
-		start_time = time.time()
-		print("[STARTED] Game Started")
-
-	# increment connections start new thread then increment ids
-	connections += 1
-	start_new_thread(threaded_client, (host, _id))
-	_id += 1
+# Попытка запустить сервер
+try:
+    S = Server(SERVER_IP, PORT)
+    print("[SERVER] Started Successfully")
+except socket.error as e:
+    print(str(e))
+    print("[SERVER] Server could not start")
+    quit()

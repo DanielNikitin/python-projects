@@ -94,7 +94,6 @@ def main(name):
 
 	run = True
 	while run:
-		print('game is runned')
 		clock.tick(30) # 30 fps max
 		player = players[current_id]
 		vel = START_VEL - round(player["score"]/14)
