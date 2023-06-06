@@ -51,12 +51,6 @@ class Server:
     def connect_handler(self):
         while True:
             try:
-                # -----ОБРАБОТЧИК СОБЫТИЙ-----
-                for e in pygame.event.get():
-                    if e.type == pygame.QUIT:
-                        print('SERVER: STOPPED')
-                # ----------------------------
-
                 # Принимаем запрос нового клиента
                 new_client, address = self.server.accept()
                 new_client.setblocking(False)

@@ -81,7 +81,7 @@ while running:
             sock.send('SERVER: УСПЕШНОЕ ПОДКЛЮЧЕНИЕ'.encode())
             client_connected = True
 
-    pygame.display.flip()
+    pygame.display.update()
 
 # закрываем сервер
 pygame.quit()
