@@ -2,21 +2,25 @@ from battle_ships_settings import *
 
 
 def play_game():
-    #class player
-    player_1 = Player("Eboisky", 3)
-    print("\nВаше имя:", player_1.p_name)
+     try:
+         player_1 = Player("Eboisky")
+         print("\nВаше имя:", player_1.p_name)
 
-    #class board
-    create_board = Board()
-    create_board.print_board()
+         game_board = Board()  # Запускаем Игровой Интерфейс
+         game_board.player = player_1  # создаем обьект для 'self.player = None'
 
-    # Добавляем возможность игроку ставить точку на поле
-    while True:
-        x, y = player_1.input_coordinates()
-        create_board.place_ship(x, y)
-        create_board.print_board()
+         game_board.print_board()  #  Рисуем текущее состояние игрового поля
+         print(f"Рядовой {player_1.p_name} расставьте ваши корабли:")
+         game_board.play_game()  # Запускаем Игровой прцоесс
 
+     except KeyboardInterrupt:
+         print("\nИгра завершена")
 
-#--- Start Game ---
-s = play_game
-s()
+#--- Начало игры ---
+play_game()
+
+# while True:
+# Производим выстрел
+#     x, y = player_1.input_coordinates()
+#     create_board.shoot(x, y)
+#     create_board.print_board()
