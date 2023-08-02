@@ -12,7 +12,7 @@
 # если мы запустили файл из консоли, и не будет,
 # если мы экспортируем этот файл.
 
-class MyClass():
+class MyClass:
    def f(self):
        return 155
 mc2=MyClass()
