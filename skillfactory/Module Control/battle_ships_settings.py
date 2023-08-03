@@ -17,7 +17,7 @@ class Ship:
 class Player:
     def __init__(self, p_name):
         self.p_name = p_name
-        self.ships_count = [Ship("Boost", 3, 3)]#, Ship("Chpoking", 2, 2), Ship("Meow", 1, 1)]  # Имя, размер, жизни
+        self.ships_count = [Ship("Boost", 3, 3), Ship("Chpoking", 2, 2), Ship("Meow", 1, 1)]  # Имя, размер, жизни
 
     def input_coordinates(self):
         while True:
@@ -133,11 +133,22 @@ class Board:
             print("что-то пошло не так [class Board / def place_ship]")
             return False
 
-    def is_position_free(self, x, y):
-        for row in range(max(0, y-1), min(6, y+2)):
-            for col in range(max(0, x-1), min(6, x+2)):
-                if self.game_board[row][col] in ('■', 'X'):
-            #    if self.game_board[row][col] == '■' or self.game_board[row][col] == 'X':  # сначала этот метод использовал, подсказали на счёт 'in'
+    def is_position_free(self, x, y):  # проверка на свободную ячейку по указанным координатам
+        for col in range(max(0, x-1), min(6, x+2)):  # перебор по горизонтали (х)
+            for row in range(max(0, y - 1), min(6, y + 2)):  # перебор по вертикали (y)
+                if self.game_board[row][col] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
+            #    if self.game_board[row][col] == '■' or self.game_board[row][col] == 'X':  # сначала этот метод использовал
+                    return False
+        return True
+
+    def is_position_free_ai(self, x, y, ship_length, r):
+        if r == 1:  # вертикальная ориентация
+            for row in range(max(0, y - 1), min(6, y + ship_length)):  # перебор по вертикали (y)
+                if self.game_board[row][x] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
+                    return False
+        elif r == 2:  # горизонтальная ориентация
+            for col in range(max(0, x - 1), min(6, x + ship_length)):  # перебор по горизонтали (х)
+                if self.game_board[y - 1][col] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
                     return False
         return True
 
@@ -182,6 +193,7 @@ class Board:
 
     def ai_shoot(self):
         # *** ИИ производит выстрел ***
+        # первым написал эту функцию, она более простая для написания и построения логики
         while True:
             try:
                 x, y = self.AIPlayer.ai_shoot_coordinates()  # выбираем random значения от 1 до 6
@@ -195,3 +207,21 @@ class Board:
                     print(f"{self.AIPlayer.p_name}: Эта клетка уже была выбрана. Повторите выстрел.")
             except ValueError:
                 print("МяВ")
+
+    def ai_place_ship(self):
+        # *** ИИ расставляет корабли ***
+        try:
+            for ship in self.AIPlayer.ships_count:  # итерируем список кораблей ИИ
+                while True:
+                    time.sleep(1)
+                    print(f"{self.AIPlayer.p_name}: Расставляю Корабли")
+                    x, y, r = self.AIPlayer.ai_ship_coordinates()  # выбираем random значения от 1 до 6
+                    if self.place_ship(ship, x, y, r) and self.is_position_free_ai(x, y, ship.length, r):
+                        # используем функцию place_ship для размещения корабля ИИ
+                        # и функцию is_position_free_ai чтобы меньше ждать рандомизацию положения корабля для ИИ
+                        # мне было лень переделывать код функции is_position_free, проще было сделать копию и добавить в нее _ai
+                        # так как код в place_ship получился обьемный, и я долго парился чтобы его сообразить, там используется проверка позиции
+                        self.print_board()  # обновляем игровое поле
+                        break  # Выходим из цикла while, так как успешно разместили корабль, и переходим к следующему
+        except:
+            print("что-то пошло не так [class Board / def ai_place_ship]")
