@@ -1,6 +1,11 @@
 import random
 import time
 
+class Config:
+    def __init__(self):
+        self.ai_ship_place_message = 0  # 1/0 - Булевая для print("Нельзя разместить корабль так близко друг к другу"
+
+
 class Dot:
     def __init__(self, x, y):
         self.x = x
@@ -17,7 +22,10 @@ class Ship:
 class Player:
     def __init__(self, p_name):
         self.p_name = p_name
-        self.ships_count = [Ship("Boost", 3, 3), Ship("Chpoking", 2, 2), Ship("Meow", 1, 1)]  # Имя, размер, жизни
+                            # Имя, размер, жизни
+        self.ships_count = [Ship("Boost", 3, 3),
+                            Ship("Chpoking", 2, 2), Ship("Fire", 2, 2),
+                            Ship("Meow", 1, 1), Ship("Кусь", 1, 1), Ship("Чики-бони", 1, 1), Ship("Boomer", 1, 1)]
 
     def input_coordinates(self):
         while True:
@@ -47,19 +55,42 @@ class AIPlayer(Player):
     #  (наследует от) класса Player.
     #  Это означает, что AIPlayer получит все свойства и методы,
     #  которые определены в классе Player
-    def __init__(self):
+    def __init__(self, board_instance):
         # super вызывает родительский метод init, и передает все атрибуты от родителя
         super().__init__("Компик")  # 'компик' это никнейм атрибута 'p_name' у class Player
+        self.board_instance = board_instance  # соединяемся с классом Board
 
-    def ai_ship_coordinates(self):
+    def ai_ship_coordinates(self, ship):
         while True:
             try:
-                x = random.randint(1, 6)
-                y = random.randint(1, 6)
-                r = random.randint(1, 2)
-                return x, y, r
-            except:
+                valid_coordinates = []
+
+                for x in range(1, 7):
+                    for y in range(1, 7):
+                        for r in range(1, 3):
+                            if self.ai_is_valid_placement(x, y, r, ship):
+                                valid_coordinates.append((x, y, r))
+                if valid_coordinates:
+                    return random.choice(valid_coordinates)
+            except ValueError:
                 pass
+
+    def ai_is_valid_placement(self, x, y, r, ship):
+        if r == 1:  # вертикальная ориентация
+            if y + ship.length - 1 <= 6:
+                for row in range(y, y + ship.length):
+                    if not self.ai_is_position_free(x, row, ship.length, r):
+                        return False
+            else:
+                return False
+        elif r == 2:  # горизонтальная ориентация
+            if x + ship.length - 1 <= 6:
+                for col in range(x, x + ship.length):
+                    if not self.ai_is_position_free(col, y, ship.length, r):
+                        return False
+            else:
+                return False
+        return True
 
     def ai_shoot_coordinates(self):
         while True:
@@ -70,6 +101,18 @@ class AIPlayer(Player):
             except:
                 pass
 
+    def ai_is_position_free(self, x, y, ship_length, r):
+        # Используем self.board_instance.game_board вместо self.game_board
+        if r == 1:
+            for row in range(max(0, y - 1), min(6, y + ship_length)):
+                if self.board_instance.game_board[row][x] in ('■', 'X'):
+                    return False
+        elif r == 2:
+            for col in range(max(0, x - 1), min(6, x + ship_length)):
+                if self.board_instance.game_board[y - 1][col] in ('■', 'X'):
+                    return False
+        return True
+
 
 class Board:
     def __init__(self, player):
@@ -78,7 +121,8 @@ class Board:
         # список
         self.game_board = [[" " for _ in range(7)] for _ in range(6)]
         self.player = player
-        self.AIPlayer = AIPlayer()
+        self.aiplayer = AIPlayer(self) # Создание экземпляра класса AIPlayer
+        self.config = Config()  # Создание экземпляра класса Config
 
     def print_board(self):
         # наносим горизонтальные ячейки и нумеруем их от 1 до 6
@@ -89,15 +133,18 @@ class Board:
                   f" | {current_row[4]} | {current_row[5]} | {current_row[6]} |")
             if i < 6:
                 print("-------------------------")
+        print("Y")
 
     def place_ship(self, ship, x, y, r):
         try:
+            #print(f"Пытаюсь поставить '{ship.name}' в ({x}, {y}) в положении '{r}'")
             if 1 <= x <= 6 and 1 <= y <= 6 and (r == 1 or r == 2):  # проверяем чтобы ввод был соответсующий для X,Y,R
                 if r == 1:  # Если выбрана вертикальная плоскость
                     if ship.length > 0 and y + ship.length - 2 <= 6:
                         for i in range(ship.length):
                             if not self.is_position_free(x, y - 1 + i):
-                                print("Нельзя разместить корабль так близко друг к другу 1")
+                                if self.config.ai_ship_place_message == 1:
+                                    print("Нельзя разместить корабль так близко друг к другу (верт)")  # вертикаль
                                 return False
                         for i in range(ship.length):
                             if self.game_board[y - 1 + i][x] != ' ':
@@ -113,7 +160,8 @@ class Board:
                     if ship.length > 0 and x + ship.length - 2 <= 6:
                         for i in range(ship.length):
                             if not self.is_position_free(x + i, y - 1):
-                                print("Нельзя разместить корабль так близко друг к другу 2")
+                                if self.config.ai_ship_place_message == 1:
+                                    print("Нельзя разместить корабль так близко друг к другу (гор)")  # горизонт
                                 return False
                         for i in range(ship.length):
                             if self.game_board[y - 1][x + i] != ' ':
@@ -138,17 +186,6 @@ class Board:
             for row in range(max(0, y - 1), min(6, y + 2)):  # перебор по вертикали (y)
                 if self.game_board[row][col] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
             #    if self.game_board[row][col] == '■' or self.game_board[row][col] == 'X':  # сначала этот метод использовал
-                    return False
-        return True
-
-    def is_position_free_ai(self, x, y, ship_length, r):
-        if r == 1:  # вертикальная ориентация
-            for row in range(max(0, y - 1), min(6, y + ship_length)):  # перебор по вертикали (y)
-                if self.game_board[row][x] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
-                    return False
-        elif r == 2:  # горизонтальная ориентация
-            for col in range(max(0, x - 1), min(6, x + ship_length)):  # перебор по горизонтали (х)
-                if self.game_board[y - 1][col] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
                     return False
         return True
 
@@ -196,32 +233,28 @@ class Board:
         # первым написал эту функцию, она более простая для написания и построения логики
         while True:
             try:
-                x, y = self.AIPlayer.ai_shoot_coordinates()  # выбираем random значения от 1 до 6
+                x, y = self.aiplayer.ai_shoot_coordinates()  # выбираем random значения от 1 до 6
                 if self.game_board[y-1][x] == ' ':  # если клетка пустая, то
                     self.game_board[y-1][x] = 'X'
-                    print(f"{self.AIPlayer.p_name}: Выстрел!")
+                    print(f"{self.aiplayer.p_name}: Выстрел!")
                     time.sleep(0.5)
                     self.print_board()
                     break
                 else:
-                    print(f"{self.AIPlayer.p_name}: Эта клетка уже была выбрана. Повторите выстрел.")
+                    print(f"{self.aiplayer.p_name}: Эта клетка уже была выбрана. Повторите выстрел.")
             except ValueError:
                 print("МяВ")
 
     def ai_place_ship(self):
         # *** ИИ расставляет корабли ***
         try:
-            for ship in self.AIPlayer.ships_count:  # итерируем список кораблей ИИ
+            for ship in self.aiplayer.ships_count:
                 while True:
-                    time.sleep(1)
-                    print(f"{self.AIPlayer.p_name}: Расставляю Корабли")
-                    x, y, r = self.AIPlayer.ai_ship_coordinates()  # выбираем random значения от 1 до 6
-                    if self.place_ship(ship, x, y, r) and self.is_position_free_ai(x, y, ship.length, r):
-                        # используем функцию place_ship для размещения корабля ИИ
-                        # и функцию is_position_free_ai чтобы меньше ждать рандомизацию положения корабля для ИИ
-                        # мне было лень переделывать код функции is_position_free, проще было сделать копию и добавить в нее _ai
-                        # так как код в place_ship получился обьемный, и я долго парился чтобы его сообразить, там используется проверка позиции
-                        self.print_board()  # обновляем игровое поле
-                        break  # Выходим из цикла while, так как успешно разместили корабль, и переходим к следующему
+                    time.sleep(0)
+                    #print(f"{self.AIPlayer.p_name}: Расставляю Корабли")
+                    x, y, r = self.aiplayer.ai_ship_coordinates(ship)
+                    if self.place_ship(ship, x, y, r):
+                        break
+            self.print_board()
         except:
             print("что-то пошло не так [class Board / def ai_place_ship]")

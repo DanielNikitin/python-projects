@@ -1,43 +1,96 @@
-import pymem
-import pymem.process
+import random
 
-dwEntityList = 0x4DFFF7C
-dwGlowObjectManager = 0x535AA08
-m_iGlowIndex = 0x10488
-m_iTeamNum = 0xF4
-m_iHealth = 0x100
+
+def create_empty_board(size):
+    return [[' ' for _ in range(size)] for _ in range(size)]
+
+
+def is_valid_placement(board, x, y, ship_size, orientation):
+    size = len(board)
+
+    offsets = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    if orientation == 'horizontal':
+
+        for i in range(ship_size):
+
+            if x + i >= size or board[y][x + i] != ' ':
+                return False
+
+            for dx, dy in offsets:
+
+                if y + dy >= 0 and y + dy < size and x + i + dx >= 0 and x + i + dx < size:
+
+                    if board[y + dy][x + i + dx] != ' ':
+                        return False
+
+    else:
+
+        for i in range(ship_size):
+
+            if y + i >= size or board[y + i][x] != ' ':
+                return False
+
+            for dx, dy in offsets:
+
+                if y + i + dy >= 0 and y + i + dy < size and x + dx >= 0 and x + dx < size:
+
+                    if board[y + i + dy][x + dx] != ' ':
+                        return False
+
+    return True
+
+
+def place_ship(board, ship_size):
+    size = len(board)
+
+    while True:
+
+        x = random.randint(0, size - 1)
+
+        y = random.randint(0, size - 1)
+
+        orientation = random.choice(['horizontal', 'vertical'])
+
+        if is_valid_placement(board, x, y, ship_size, orientation):
+
+            if orientation == 'horizontal':
+
+                for i in range(ship_size):
+                    board[y][x + i] = 'R'
+
+            else:
+
+                for i in range(ship_size):
+                    board[y + i][x] = 'R'
+
+            break
+
+
+def print_board(board):
+    size = len(board)
+
+    print('  ' + ' '.join(map(str, range(1, size + 1))))
+
+    print('  ' + '- ' * size)
+
+    for i in range(size):
+        print(chr(ord('A') + i) + '|' + ' '.join(board[i]) + '|')
 
 
 def main():
-    print("Diamond has launched.")
-    pm = pymem.Pymem("csgo.exe")
-    client = pymem.process.module_from_name(pm.process_handle, "client.dll").lpBaseOfDll
+    size = 10
 
-    while True:
-        glow_manager = pm.read_int(client + dwGlowObjectManager)
+    board = create_empty_board(size)
 
-        for i in range(1, 32):  # Entities 1-32 are reserved for players.
-            entity = pm.read_int(client + dwEntityList + i * 0x10)
+    ship_sizes = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
 
-            if entity:
-                entity_team_id = pm.read_int(entity + m_iTeamNum)
-                entity_glow = pm.read_int(entity + m_iGlowIndex)
+    for ship_size in ship_sizes:
+        place_ship(board, ship_size)
 
-                if entity_team_id == 2:  # Terrorist
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0x4, float(1))   # R
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0x8, float(0))   # G
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0xC, float(0))   # B
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0x10, float(1))  # Alpha
-                    pm.write_int(glow_manager + entity_glow * 0x38 + 0x24, 1)           # Enable glow
+    print("Welcome to Battleship!")
 
-                elif entity_team_id == 3:  # Counter-terrorist
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0x4, float(0))   # R
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0x8, float(0))   # G
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0xC, float(1))   # B
-                    pm.write_float(glow_manager + entity_glow * 0x38 + 0x10, float(1))  # Alpha
-                    pm.write_int(glow_manager + entity_glow * 0x38 + 0x24, 1)           # Enable glow
+    print_board(board)
 
-    except KeyboardInterrupt
 
-if __name__ == '__main__':
-    main()
+main()
