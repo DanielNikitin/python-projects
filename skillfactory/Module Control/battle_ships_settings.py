@@ -72,8 +72,8 @@ class AIPlayer(Player):
                                 valid_coordinates.append((x, y, r))
                 if valid_coordinates:
                     return random.choice(valid_coordinates)
-            except ValueError:
-                pass
+            except Exception as e:
+                print(f"Ошибка: {e} ")
 
     def ai_is_valid_placement(self, x, y, r, ship):
         if r == 1:  # вертикальная ориентация
@@ -105,11 +105,11 @@ class AIPlayer(Player):
         # Используем self.board_instance.game_board вместо self.game_board
         if r == 1:
             for row in range(max(0, y - 1), min(6, y + ship_length)):
-                if self.board_instance.game_board[row][x] in ('■', 'X'):
+                if self.board_instance.ai_board[row][x] in ('■', 'X'):
                     return False
         elif r == 2:
             for col in range(max(0, x - 1), min(6, x + ship_length)):
-                if self.board_instance.game_board[y - 1][col] in ('■', 'X'):
+                if self.board_instance.ai_board[y - 1][col] in ('■', 'X'):
                     return False
         return True
 
@@ -119,25 +119,33 @@ class Board:
         # создаем двумерный список, присваемваем функционал для атрибута
         # по принципу действия напоминает генератор (потому что итерируем при вызове)
         # список
-        self.game_board = [[" " for _ in range(7)] for _ in range(6)]
+        self.player_board = [[" " for _ in range(7)] for _ in range(6)]
+        self.ai_board = [[" " for _ in range(7)] for _ in range(6)]
         self.player = player
         self.aiplayer = AIPlayer(self) # Создание экземпляра класса AIPlayer
         self.config = Config()  # Создание экземпляра класса Config
+        self.current_board = self.ai_board if self.aiplayer != self.player else self.player_board
 
     def print_board(self):
-        # наносим горизонтальные ячейки и нумеруем их от 1 до 6
-        print("  1 | 2 | 3 | 4 | 5 | 6 | X")
-        # 'i+1' для начала отчёта с 1, а не с 0
-        for i, current_row in enumerate(self.game_board):
-            print(f"{i+1} {current_row[1]} | {current_row[2]} | {current_row[3]}"
-                  f" | {current_row[4]} | {current_row[5]} | {current_row[6]} |")
-            if i < 6:
-                print("-------------------------")
-        print("Y")
+        print("           [Поле Игрока]        :             [Поле ИИ]")
+        print("    1 | 2 | 3 | 4 | 5 | 6 | X   |      1 | 2 | 3 | 4 | 5 | 6 | X")
+        for i in range(6):
+            player_row = f"{i + 1} "
+            ai_row = f"{i + 1} "
+            for j in range(6):
+                player_row += f"| {self.player_board[i][j+1]} "
+                ai_row += f"| {self.ai_board[i][j]} "
+            player_row += "|"
+            ai_row += "|"
+            print(player_row.ljust(30), " | ", ai_row.ljust(30))  # ljust выраввнивание по левому краю
+            if i != 5:
+                print("-------------------------     |    -------------------------")
+        print("Y                                  Y")
 
     def place_ship(self, ship, x, y, r):
         try:
-            #print(f"Пытаюсь поставить '{ship.name}' в ({x}, {y}) в положении '{r}'")
+            for i in range(ship.length):
+                print(f"Попытка {i + 1}: Размещение корабля '{ship.name}' в ({x}, {y - 1 + i})")
             if 1 <= x <= 6 and 1 <= y <= 6 and (r == 1 or r == 2):  # проверяем чтобы ввод был соответсующий для X,Y,R
                 if r == 1:  # Если выбрана вертикальная плоскость
                     if ship.length > 0 and y + ship.length - 2 <= 6:
@@ -147,12 +155,12 @@ class Board:
                                     print("Нельзя разместить корабль так близко друг к другу (верт)")  # вертикаль
                                 return False
                         for i in range(ship.length):
-                            if self.game_board[y - 1 + i][x] != ' ':
+                            if self.current_board[y - 1 + i][x] != ' ':
                                 print("Корабль уже находится в этой клетке. Пожалуйста, выберите другие координаты.")
                                 return False  # return возвращает на стартовую позицию функции, иначе мы сможем поставить корабль на место, где уже есть корабль
-                            self.game_board[y - 1 + i][x] = '■'
+                            self.current_board[y - 1 + i][x] = '■'
                     elif ship.length == 1:
-                        self.game_board[y - 1][x] = '■'
+                        self.current_board[y - 1][x] = '■'
                     else:
                         print("Корабль не помещается на доску. Пожалуйста, выберите другие координаты.")
                         return False
@@ -164,12 +172,12 @@ class Board:
                                     print("Нельзя разместить корабль так близко друг к другу (гор)")  # горизонт
                                 return False
                         for i in range(ship.length):
-                            if self.game_board[y - 1][x + i] != ' ':
+                            if self.current_board[y - 1][x + i] != ' ':
                                 print("Корабль уже находится в этой клетке. Пожалуйста, выберите другие координаты.")
                                 return False  # возвращает на стартовую позицию функции, иначе мы сможем поставить корабль на место, где уже есть корабль
-                            self.game_board[y - 1][x + i] = '■'
+                            self.current_board[y - 1][x + i] = '■'
                     elif ship.length == 1:
-                        self.game_board[y - 1][x] = '■'
+                        self.current_board[y - 1][x] = '■'
                     else:
                         print("Корабль не помещается на доску. Пожалуйста, выберите другие координаты.")
                         return False
@@ -177,14 +185,14 @@ class Board:
             else:
                 print("Неверные координаты или ориентация. Пожалуйста, введите числа от 1 до 6 для X и Y, а для R - 1 или 2.")
                 return False
-        except IndexError:
-            print("что-то пошло не так [class Board / def place_ship]")
+        except Exception as e:
+            print(f"Ошибка: {e}")
             return False
 
     def is_position_free(self, x, y):  # проверка на свободную ячейку по указанным координатам
         for col in range(max(0, x-1), min(6, x+2)):  # перебор по горизонтали (х)
             for row in range(max(0, y - 1), min(6, y + 2)):  # перебор по вертикали (y)
-                if self.game_board[row][col] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
+                if self.player_board[row][col] in ('■', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
             #    if self.game_board[row][col] == '■' or self.game_board[row][col] == 'X':  # сначала этот метод использовал
                     return False
         return True
@@ -203,8 +211,8 @@ class Board:
                             self.print_board()  # обновляем игровое поле
                             current_ships_index += 1  # добавляем +1 к индексу
                             break  # Выходим из цикла while, так как успешно разместили корабль, и переходим к следующему
-        except:
-            print("что-то пошло не так [class Board / def play_game]")
+        except Exception as e:
+            print(f"Ошибка: {e}")
 
     def shoot(self):
         # *** Производим выстрел ***
@@ -217,7 +225,7 @@ class Board:
                     # 'y-1' это вертикальная координата, 'x' горизонтальная
                     # порядок расстановки y и x, исходя из функционала for в self.game_board
                     # квадратные скобки используются для индексации элементов списков, кортежей и других структур данных, которые итерируются
-                    self.game_board[y-1][x] = 'X'
+                    self.player_board[y-1][x] = 'X'
                     print("Выстрел!")
                     time.sleep(0.5)
                     self.print_board()
@@ -225,8 +233,8 @@ class Board:
                     start_shooting = False
                 else:
                     print("Неверные координаты. Пожалуйста, введите числа от 1 до 6")
-            except:
-                print("МяВ")
+            except Exception as e:
+                print(f"Ошибка: {e}")
 
     def ai_shoot(self):
         # *** ИИ производит выстрел ***
@@ -234,16 +242,16 @@ class Board:
         while True:
             try:
                 x, y = self.aiplayer.ai_shoot_coordinates()  # выбираем random значения от 1 до 6
-                if self.game_board[y-1][x] == ' ':  # если клетка пустая, то
-                    self.game_board[y-1][x] = 'X'
+                if self.player_board[y-1][x] == ' ':  # если клетка пустая, то
+                    self.player_board[y-1][x] = 'X'
                     print(f"{self.aiplayer.p_name}: Выстрел!")
                     time.sleep(0.5)
                     self.print_board()
                     break
                 else:
                     print(f"{self.aiplayer.p_name}: Эта клетка уже была выбрана. Повторите выстрел.")
-            except ValueError:
-                print("МяВ")
+            except Exception as e:
+                print(f"Ошибка: {e}")
 
     def ai_place_ship(self):
         # *** ИИ расставляет корабли ***
@@ -256,5 +264,5 @@ class Board:
                     if self.place_ship(ship, x, y, r):
                         break
             self.print_board()
-        except:
-            print("что-то пошло не так [class Board / def ai_place_ship]")
+        except Exception as e:
+            print(f"Ошибка: {e}")

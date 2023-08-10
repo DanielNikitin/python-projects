@@ -11,12 +11,13 @@ def start_game():
          print("Морской Бой Запущен!")
 
          game_board.player = player_1  # создаем обьект для 'self.player = None'
-         game_board.print_board()  #  Рисуем текущее состояние игрового поля
+         game_board.print_board()  # Передаем поля игрока и ИИ
          #print(f"Рядовой {player_1.p_name} расставьте ваши корабли:")
-         #game_board.play_game()  # Запускаем Игровой прцоесс
          game_board.ai_place_ship()
+         game_board.play_game()  # Запускаем Игровой прцоесс
          #game_board.ai_shoot()
          #game_board.shoot()
+         #game_board.test_print_board()
 
      except KeyboardInterrupt:
          print("\nИгра завершена")
