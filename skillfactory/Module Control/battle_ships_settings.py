@@ -23,9 +23,9 @@ class Player:
     def __init__(self, p_name):
         self.p_name = p_name
                             # Имя, размер, жизни
-        self.ships_count = [Ship("Boost", 3, 3),
-                            Ship("Chpoking", 2, 2), Ship("Fire", 2, 2),
-                            Ship("Meow", 1, 1), Ship("Кусь", 1, 1), Ship("Чики-бони", 1, 1), Ship("Boomer", 1, 1)]
+        self.ships_count = [Ship("Boost", 3, 3)]#,
+                            #Ship("Chpoking", 2, 2), Ship("Fire", 2, 2),
+                            #Ship("Meow", 1, 1), Ship("Кусь", 1, 1), Ship("Чики-бони", 1, 1), Ship("Boomer", 1, 1)]
 
     def input_coordinates(self):
         while True:
@@ -118,13 +118,26 @@ class Board:
     def __init__(self, player):
         # создаем двумерный список, присваемваем функционал для атрибута
         # по принципу действия напоминает генератор (потому что итерируем при вызове)
-        # список
+        # player в init нужен для определения обращения игрок или ии
         self.player_board = [[" " for _ in range(7)] for _ in range(6)]
         self.ai_board = [[" " for _ in range(7)] for _ in range(6)]
         self.player = player
         self.aiplayer = AIPlayer(self) # Создание экземпляра класса AIPlayer
         self.config = Config()  # Создание экземпляра класса Config
-        self.current_board = self.ai_board if self.aiplayer != self.player else self.player_board
+        self.current_board_is_player = True # Булевая для установки True (доска игрока)
+        self.current_board = self.get_current_board() # Устанавливаем текущую доску по умолчанию
+
+    def switch_current_board(self):
+        # Метод для переключения текущей доски между player_board и ai_board
+        self.current_board_is_player = not self.current_board_is_player  # переключаем True/False
+
+    def get_current_board(self):
+        if self.current_board_is_player:
+            print("player board")
+            return self.player_board
+        else:
+            print("ai board")
+            return self.ai_board
 
     def print_board(self):
         print("           [Поле Игрока]        :             [Поле ИИ]")
@@ -144,9 +157,12 @@ class Board:
 
     def place_ship(self, ship, x, y, r):
         try:
-            for i in range(ship.length):
-                print(f"Попытка {i + 1}: Размещение корабля '{ship.name}' в ({x}, {y - 1 + i})")
+            #for i in range(ship.length):
+              #  print(f"Попытка {i + 1}: Размещение корабля '{ship.name}' в ({x}, {y - 1 + i})")
+               # print("Что-то не так")
+                #return False
             if 1 <= x <= 6 and 1 <= y <= 6 and (r == 1 or r == 2):  # проверяем чтобы ввод был соответсующий для X,Y,R
+                current_board = self.get_current_board()
                 if r == 1:  # Если выбрана вертикальная плоскость
                     if ship.length > 0 and y + ship.length - 2 <= 6:
                         for i in range(ship.length):
@@ -155,12 +171,12 @@ class Board:
                                     print("Нельзя разместить корабль так близко друг к другу (верт)")  # вертикаль
                                 return False
                         for i in range(ship.length):
-                            if self.current_board[y - 1 + i][x] != ' ':
+                            if current_board[y - 1 + i][x] != ' ':
                                 print("Корабль уже находится в этой клетке. Пожалуйста, выберите другие координаты.")
                                 return False  # return возвращает на стартовую позицию функции, иначе мы сможем поставить корабль на место, где уже есть корабль
-                            self.current_board[y - 1 + i][x] = '■'
+                            current_board[y - 1 + i][x] = '■'
                     elif ship.length == 1:
-                        self.current_board[y - 1][x] = '■'
+                        current_board[y - 1][x] = '■'
                     else:
                         print("Корабль не помещается на доску. Пожалуйста, выберите другие координаты.")
                         return False
@@ -172,12 +188,12 @@ class Board:
                                     print("Нельзя разместить корабль так близко друг к другу (гор)")  # горизонт
                                 return False
                         for i in range(ship.length):
-                            if self.current_board[y - 1][x + i] != ' ':
+                            if current_board[y - 1][x + i] != ' ':
                                 print("Корабль уже находится в этой клетке. Пожалуйста, выберите другие координаты.")
                                 return False  # возвращает на стартовую позицию функции, иначе мы сможем поставить корабль на место, где уже есть корабль
-                            self.current_board[y - 1][x + i] = '■'
+                            current_board[y - 1][x + i] = '■'
                     elif ship.length == 1:
-                        self.current_board[y - 1][x] = '■'
+                        current_board[y - 1][x] = '■'
                     else:
                         print("Корабль не помещается на доску. Пожалуйста, выберите другие координаты.")
                         return False
@@ -259,7 +275,6 @@ class Board:
             for ship in self.aiplayer.ships_count:
                 while True:
                     time.sleep(0)
-                    #print(f"{self.AIPlayer.p_name}: Расставляю Корабли")
                     x, y, r = self.aiplayer.ai_ship_coordinates(ship)
                     if self.place_ship(ship, x, y, r):
                         break

@@ -14,13 +14,14 @@ def start_game():
          game_board.print_board()  # Передаем поля игрока и ИИ
          #print(f"Рядовой {player_1.p_name} расставьте ваши корабли:")
          game_board.ai_place_ship()
+         game_board.switch_current_board()
+         game_board.get_current_board()
          game_board.play_game()  # Запускаем Игровой прцоесс
          #game_board.ai_shoot()
          #game_board.shoot()
-         #game_board.test_print_board()
 
      except KeyboardInterrupt:
-         print("\nИгра завершена")
+         print("\nQuit")
 
 #--- Начало игры ---
 start_game()
