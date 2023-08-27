@@ -221,7 +221,7 @@ class Board:
     def is_position_free(self, x, y, ship):  # проверка на свободную ячейку по указанным координатам
         for col in range(max(1, x - ship.length), min(6, x + ship.length + 1)):  # перебор по горизонтали (х)
             for row in range(max(1, y - ship.length), min(6, y + ship.length + 1)):  # перебор по вертикали (y)
-                if self.player_board[row - 1][col - 1] in ('1', '2', '3', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
+                if self.player_board[row][col] in ('1', '2', '3', 'X'):  # если в ячейке есть что-то, то return False, и проверяем заново
                     print("is_position_free: Return Fault")
                     return False
         if self.config.is_position_free_message:
