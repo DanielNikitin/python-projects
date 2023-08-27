@@ -14,9 +14,12 @@ def start_game():
          game_board.print_board()  # Передаем поля игрока и ИИ
          #print(f"Рядовой {player_1.p_name} расставьте ваши корабли:")
          game_board.ai_place_ship()
-         game_board.switch_current_board()
-         game_board.get_current_board()
-         game_board.play_game()  # Запускаем Игровой прцоесс
+         #game_board.get_current_board()
+         #game_board.switch_current_board()
+         #game_board.get_current_board()
+         #game_board.play_game()
+         #while True:
+         #game_board.ai_shoot()
          #game_board.ai_shoot()
          #game_board.shoot()
 

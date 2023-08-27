@@ -55,7 +55,7 @@ def glow():
                     pm.write_float(glow + entityglowing * 0x38 + 0x8, float(0))  # R
                     pm.write_float(glow + entityglowing * 0x38 + 0xC, float(0))  # G
                     pm.write_float(glow + entityglowing * 0x38 + 0x10, float(1))  # B
-                    pm.write_float(glow + entityglowing * 0x38 + 0x14, float(1))  # Alfa
+                    pm.write_float(glow + entityglowing * 0x38 + 0x14, float(1))  # Alfa (прозрачность)
                     pm.write_int(glow + entityglowing * 0x38 + 0x28, 1)
                     # Записывает значение 1 в память по адресу
                     # glow + entityglowing * 0x38 + 0x28
