@@ -13,9 +13,9 @@ def start_game():
          game_board.player = player_1  # создаем обьект для 'self.player = None'
          game_board.print_board()  # Передаем поля игрока и ИИ
          #print(f"Рядовой {player_1.p_name} расставьте ваши корабли:")
+         game_board.switch_current_board()
          game_board.ai_place_ship()
          #game_board.get_current_board()
-         #game_board.switch_current_board()
          #game_board.get_current_board()
          #game_board.play_game()
          #while True:
