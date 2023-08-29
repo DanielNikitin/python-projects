@@ -16,7 +16,6 @@ def start_game():
          game_board.switch_current_board()
          game_board.ai_place_ship()
          #game_board.get_current_board()
-         #game_board.get_current_board()
          #game_board.player_place_ship()
          #while True:
          #game_board.player_place_ship()

@@ -127,9 +127,6 @@ class Board:
 
     def place_ship(self, ship, x, y, r):
         try:
-            for i in range(ship.length):
-                print(f"Попытка {i + 1}: Размещение корабля '{ship.name}' в ({x}, {y - 1 + i}, {r})")
-                return False
             if 1 <= x <= 6 and 1 <= y <= 6 and (r == 1 or r == 2):  # проверяем чтобы ввод был соответсующий для X,Y,R
                 current_board = self.get_current_board()
                 if r == 1:  # Если выбрана вертикальная плоскость
@@ -140,12 +137,12 @@ class Board:
                                     print("Нельзя разместить корабль так близко друг к другу (верт)")  # вертикаль
                                 return False
                         for i in range(ship.length):
-                            if current_board[y - 1 + i][x] != ' ':
+                            if current_board[y - 1 + i][x-1] != ' ':
                                 print("Корабль уже находится в этой клетке. Пожалуйста, выберите другие координаты.")
                                 return False  # return возвращает на стартовую позицию функции, иначе мы сможем поставить корабль на место, где уже есть корабль
-                            current_board[y - 1 + i][x] = '■'
+                            current_board[y - 1 + i][x-1] = '■'
                     elif ship.length == 1:
-                        current_board[y - 1][x] = '■'
+                        current_board[y - 1][x-1] = '■'
                     else:
                         print("Корабль не помещается на доску. Пожалуйста, выберите другие координаты.")
                         return False
@@ -176,8 +173,8 @@ class Board:
 
     def is_position_free(self, x, y):  # проверка на свободную ячейку по указанным координатам
         current_board = self.get_current_board()
-        for col in range(max(0, x-1), min(6, x+2)):  # перебор по горизонтали (х)
-            for row in range(max(0, y-1), min(6, y+2)):  # перебор по вертикали (y)
+        for col in range(max(1, x-1), min(6, x+2)):  # перебор по горизонтали (х)
+            for row in range(max(1, y-1), min(6, y+2)):  # перебор по вертикали (y)
                 if current_board[row][col] in '■':  # если в ячейке есть что-то, то return False, и проверяем заново
                     return False
         return True
