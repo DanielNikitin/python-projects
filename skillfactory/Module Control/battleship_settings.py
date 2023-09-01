@@ -3,34 +3,41 @@ import random
 class Config:
     def __init__(self):
         self.SHOW_ENEMY_BOARD = 0  # Отображение игрового поля противника
-        self.POS_FREE_MESSAGE = 0  # Свободно-ли место возле корабля
-        self.CHOOSE_ORIENTATION = 1  # Выбор ориентации
-        self.SUM_ALL_SHIPS = 1  # Сумма всех кораблей
+        self.POS_FREE_MESSAGE = 0  # Отображение Свободного места возле корабля
+        self.SUM_ALL_SHIPS = 1  # Отображение Суммы всех кораблей
+
+        self.CHOOSE_ORIENTATION = 1  # Выбор ориентации (нужна для корректной работы user_input)
 
 
 class BattleshipGame:
     def __init__(self):
-        self.LENGTH_OF_SHIPS = [3, 4, 3]
-        self.BOARD_SIZE = 6
-        self.PLAYER_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]
-        self.AI_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]
-        self.PLAYER_GUESS_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]
-        self.AI_GUESS_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]
+        self.LENGTH_OF_SHIPS = [3, 4, 3]  # список кораблей
+        self.BOARD_SIZE = 6  # размер игровой доски
         # Словарь, нужен для удобства ввода (так как итерация начинается от 0)
         self.NUMBERS = {'1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5}
 
-        self.config = Config()
+        self.PLAYER_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]  # Игровая доска игрока
+        self.AI_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]  # ИИ
 
-    def print_board(self, board):  # board атрибут делает функцию нейтральной
-                                   # для вызова доски Игрока и ИИ
-        print("\nPlayer Board:")
+        self.PLAYER_GUESS_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]  # пустое поле для выстрелов игрока
+        self.AI_GUESS_BOARD = [[" "] * self.BOARD_SIZE for _ in range(self.BOARD_SIZE)]  # для ии
+
+        self.config = Config()  # подключаем class Config
+
+    def print_board(self, board):
+        # board атрибут делает функцию нейтральной
+        # для вызова доски Игрока и ИИ
+        # без нее будет возможно привязать только к одной доске
+        print("\nДоска Игрока:")
         print("  1 2 3 4 5 6")
-        print("-+-++-+-+-+-+-+")
-        row_number = 1
+        print("-+-+-+-+-+-+-+-")
+        row_number = 1  # с какого числа начинаем отсчёт номер столбца
         for row in board:
             print(f"{row_number}|{'|'.join(row)}|")
+            # join соединяет элементы списка row и '|'
             row_number += 1
         if self.config.SHOW_ENEMY_BOARD == 1:
+            game = BattleshipGame()
             game.print_enemy_board()
 
     def print_enemy_board(self):
@@ -60,7 +67,7 @@ class BattleshipGame:
                             break
                 else:
                     place_ship = True
-                    print('Place the ship with a length of ' + str(ship_length))
+                    print('Расположите корабль длинной ' + str(ship_length))
                     print('------------------')
                     row, column, orientation = self.user_input(place_ship)
                     if self.check_ship_fit(ship_length, row, column, orientation):
@@ -111,79 +118,62 @@ class BattleshipGame:
         return False  # если пусто, False
 
     def user_input(self, place_ship):
-        orientation = None
+        orientation = None  # обозначаем сток значение ориентации чтобы не получать ошибку
         if place_ship:
             if self.config.CHOOSE_ORIENTATION == 1:
-                print("PLAYER_INPUT = 1")
+                #print("PLAYER_INPUT = 1")
                 while True:
                     try:
-                        orientation = input("Enter orientation (H or V): ").upper()
+                        orientation = input("Введите ориентацию (H или V): ").upper()  # upper преобразует символы в заглавные
                         if orientation == "H" or orientation == "V":
                             break
                         else:
-                            print("Empty cell")
+                            print("Пустой ввод")
                     except TypeError:
-                        print('Enter a valid orientation H or V')
+                        print('Неверно введена ориентация H или V')
+
             while True:
                 try:
-                    row = input("Enter the row 1-6 of the ship: ")
+                    row = input("Введите число оси Х от 1 до 6: ")
                     if row in '123456':
                         row = int(row) - 1
                         break
                     else:
-                        print("Empty cell")
+                        print("Неверный ввод. Введите целое число для оси Х от 1 до 6.")
                 except ValueError:
-                    print('Enter a valid letter between 1-6')
+                    print("Пустой ввод")
+
             while True:
                 try:
-                    column = input("Enter the column 1-6 of the ship: ").upper()
+                    column = input("Введите число оси Y от 1 до 6: ")
                     if column in '123456':
                         column = self.NUMBERS[column]
                         break
+                    elif not column:
+                        print("Пустой ввод")
                     else:
-                        print("Empty cell")
+                        print("Неверный ввод. Введите целое число для оси Y от 1 до 6.")
                 except ValueError:
-                    print('Enter a valid letter between 1-6')
-            return row, column, orientation
-        else:
-            while True:
-                try:
-                    row = input("Enter the row 1-6 of the ship: ")
-                    if row in '123456':
-                        row = int(row) - 1
-                        break
-                    else:
-                        print("Empty cell")
-                except ValueError:
-                    print('Enter a valid letter between 1-6')
-            while True:
-                try:
-                    column = input("Enter the column 1-6 of the ship: ").upper()
-                    if column in '123456':
-                        column = self.NUMBERS[column]
-                        break
-                    else:
-                        print("Empty cell")
-                except ValueError:
-                    print('Enter a valid letter between 1-6')
-            return row, column
+                    print("Пустой ввод")
 
-    def calculate_total_ship_length(self):
-        return sum(self.LENGTH_OF_SHIPS)
+            return row, column, orientation  # получаем все данные для ввода строка/столбец/ориентация
 
-    def count_hit_ships(self, board):
-        count = 0
+    def calculate_total_ship_length(self):  # авто подсчёт кораблей на поле
+        return sum(self.LENGTH_OF_SHIPS)  # возврат суммы чисел внутри списка
+
+    def count_hit_ships(self, board):  # подсчёт подбитых кораблей
+        count = 0  # изначально 0
         for row in board:
             for column in row:
-                if column == "X":
-                    count += 1
+                if column == "X":  # ищем 'X'
+                    count += 1  # если нашел то +1
         return count
 
     def turn(self, board):
         if board == self.PLAYER_GUESS_BOARD:
             self.config.CHOOSE_ORIENTATION = 0
-            print("PLAYER_INPUT = 0")
-            user_input = self.user_input(self.PLAYER_GUESS_BOARD)
+            #print("PLAYER_INPUT = 0")
+            user_input = self.user_input(self.PLAYER_GUESS_BOARD)  # где будем угадывать корабли
             row, column = user_input[0], user_input[1]  # [0] это строка [1] столбец
             if board[row][column] == "-":
                 self.turn(board)
@@ -203,31 +193,3 @@ class BattleshipGame:
                 board[row][column] = "X"
             else:
                 board[row][column] = "-"
-
-
-if __name__ == "__main__":
-    print("\n======= Welcome to Battleship =======\n\n")
-    game = BattleshipGame()
-    game.place_ships(game.AI_BOARD)
-    game.print_board(game.PLAYER_BOARD)
-    game.place_ships(game.PLAYER_BOARD)
-
-    while True:
-        while True:
-            print("\n -- Player Turn --")
-            print('Guess enemy location')
-            game.print_board(game.PLAYER_GUESS_BOARD)
-            game.turn(game.PLAYER_GUESS_BOARD)
-            break
-        if game.count_hit_ships(game.PLAYER_GUESS_BOARD) == game.calculate_total_ship_length():
-            print("You win!")
-            break
-
-        while True:
-            print("\n-- Computer Turn --\n")
-            game.turn(game.AI_GUESS_BOARD)
-            break
-        game.print_board(game.AI_GUESS_BOARD)
-        if game.count_hit_ships(game.AI_GUESS_BOARD) == game.calculate_total_ship_length():
-            print("Sorry, the computer won.")
-            break
