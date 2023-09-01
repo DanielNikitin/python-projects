@@ -1,0 +1,11 @@
+kfzw
+kfzw2
+kfzwA
+kfzwa2
+kfzwOP
+kfzpOP2
+kfzwOPA
+kfzwOPA2
+X 2000-7000
+Y 0-15
+Z -33*
