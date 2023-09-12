@@ -19,8 +19,9 @@ def start(message):
     markup.add(btn6)
 
     bot.send_message(message.chat.id, '🤗 *** ДОБРО ПОЖАЛОВАТЬ *** 🤗')
-    bot.send_message(message.chat.id, '🏦ВАЛЮТНЫЙ БОТ КОНВЕРТЕР🏦')
-    bot.send_message(message.chat.id, '♦️️️НАШЕ МЕНЮ♦️')
+    bot.send_message(message.chat.id, '🏦-ВАЛЮТНЫЙ БОТ КОНВЕРТЕР-🏦')
+    bot.send_message(message.chat.id, '🏦-ВАЛЮТНЫЙ БОТ КОНВЕРТЕР-🏦')
+    bot.send_message(message.chat.id, '♦️ОЗНАКОМЬТЕСЬ С НАШИМ МЕНЮ♦️')
     bot.send_message(message.chat.id, '👇👇👇👇👇👇👇👇👇👇👇👇', reply_markup=markup)
 
 def summa(message):
@@ -37,18 +38,13 @@ def callback(call):
     values = call.data.upper().split('/')
     if len(values) >= 2:
         res = currency.convert(amount, values[0], values[1])
-        bot.send_message(call.message.chat.id, f'Итог: {round(res, 2)} \n'
-                                               f'Введите новую сумму')
+        bot.send_message(call.message.chat.id, f'Итог: {round(res, 2)}. \nВведите новую сумму.')
         bot.register_next_step_handler(call.message, summa)
-
     elif call.data == 'else':
-        bot.send_message(call.message.chat.id, 'ПРИМЕР ВВОДА: [** eur/gbp **]\n'
-                                               'ПРИМЕРЫ ДОСТУПНЫ В -->ВАРИАНТЫ ВАЛЮТЫ<--')
+        bot.send_message(call.message.chat.id, 'ПРИМЕР ВВОДА: [** eur/gbp **]\nПРИМЕРЫ ДОСТУПНЫ В -->"ВАРИАНТЫ ВАЛЮТЫ"')
         bot.register_next_step_handler(call.message, my_currency)
-
     elif call.data == 'values':
-        bot.send_message(call.message.chat.id, 'Japan Yen 🇯🇵 :  JPY\nTurkish Lir 🇹🇳 :  TRY')
-
+        bot.send_message(call.message.chat.id, 'Japan Yen 🇯🇵 :  JPY,\nTurkish Lir 🇹🇳 :  TRY')
     else:
         bot.send_message(call.message.chat.id, 'Введите пару через "/",\nнапр. eur/gbp')
         bot.register_next_step_handler(call.message, my_currency)
@@ -57,11 +53,10 @@ def my_currency(message):
     try:
         values = message.text.upper().split('/')
         res = currency.convert(amount, values[0], values[1])
-        bot.send_message(message.chat.id, f'Итог: {round(res, 2)} \n'
-                                          f'Можете отправить запрос заново')
+        bot.send_message(message.chat.id, f'Итог: {round(res, 2)}. \nМожете отправить запрос заново.')
         bot.register_next_step_handler(message, summa)
     except Exception:
         bot.send_message(message.chat.id, 'My_Curr: Что-то не так')
         bot.register_next_step_handler(message, my_currency)
 
-bot.polling(none_stop=True)  # запуск цикла работы бота
+bot.polling(none_stop=True)
