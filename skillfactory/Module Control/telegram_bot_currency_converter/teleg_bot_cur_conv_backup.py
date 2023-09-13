@@ -44,12 +44,11 @@ def my_currency(message):
     try:
         values = message.text.upper().split('/')
         res = currency.convert(amount, values[0], values[1])
-        bot.send_message(message.chat.id, f'Итог: {round(res, 2)}')
+        bot.send_message(message.chat.id, f'Итог: {round(res, 2)} \n')
         bot.register_next_step_handler(message, input_amount)  # ожидаем ввод новой суммы
     except Exception:
         bot.send_message(message.chat.id, 'Ошибка 2')
-        bot.register_next_step_handler(message, input_amount)
-        return
+        bot.register_next_step_handler(message, my_currency)
 
 @bot.callback_query_handler(func=lambda call: True)
 # ожидание ввода USD/EUR
@@ -64,7 +63,7 @@ def callback(call):
 
     elif call.data == 'other':
         bot.send_message(call.message.chat.id, '"валюта1/валюта2"')
-        bot.register_next_step_handler(call.message, my_currency)
+        bot.register_next_step_handler(call.message, input_amount)
 
     elif call.data == 'values':
         bot.send_message(call.message.chat.id, 'Japan Yen 🇯🇵 :  JPY\nTurkish Lir 🇹🇳 :  TRY')
