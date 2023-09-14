@@ -1,5 +1,5 @@
 import requests
-from config import bot, open_weather_token
+from config import tg_bot_token, open_weather_token
 from pprint import pprint
 import datetime
 
