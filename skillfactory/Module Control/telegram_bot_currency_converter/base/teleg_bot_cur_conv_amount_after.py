@@ -1,26 +1,21 @@
 import telebot  # выбрал его, так как уже ранее работал и мне с ним удобнее
 from telebot import types  # нужен для того, чтобы обращаться напрямую без telebot.types
 from currency_converter import CurrencyConverter  # https://pypi.org/project/CurrencyConverter/
+from config import bot
 
-bot = telebot.TeleBot('6477563848:AAHS2OiKnKFPadIl-ThW5Q0xzzfrSXmkeq0')  # API
+
 currency = CurrencyConverter()  # подключаем в работу библиотеку конвертера
 amount = 0  # первоначальное значение
 
+
 @bot.message_handler(commands=['start'])  # при вводе /start, запускаем функцию start
 def start(message):
-    bot.send_message(message.chat.id, 'Введите сумму')
-    bot.register_next_step_handler(message, input_amount)
+    main_menu(message)
 
-def input_amount(message):
-    global amount
-    try:
-        amount = int(message.text.strip())
-    except ValueError:
-        bot.send_message(message.chat.id, 'i_a: Неверный формат. Введите числовое значение')
-        bot.register_next_step_handler(message, input_amount)
-        return
+    #bot.send_message(message.chat.id, 'Введите сумму')
+    #bot.register_next_step_handler(message, input_amount)
 
-    if amount > 0:
+def main_menu(message):
         markup = types.InlineKeyboardMarkup(row_width=2)
         btn1 = types.InlineKeyboardButton('💶EUR/USD💵', callback_data='eur/usd')
         btn2 = types.InlineKeyboardButton('💵USD/EUR💶', callback_data='usd/eur')
@@ -32,10 +27,9 @@ def input_amount(message):
         bot.send_message(message.chat.id, '🤗 *** ДОБРО ПОЖАЛОВАТЬ *** 🤗')
         bot.send_message(message.chat.id, '🏦ВАЛЮТНЫЙ БОТ КОНВЕРТЕР🏦')
         bot.send_message(message.chat.id, '♦️️♦️♦️️️️️️️НАШЕ МЕНЮ♦️️️♦️️♦️')
-        bot.send_message(message.chat.id, '👇👇👇👇👇👇👇👇👇👇👇👇', reply_markup=markup)
-        bot.send_message(message.chat.id, f'Вы хотите конвертировать {amount} единиц(у)')
-    else:
-        bot.send_message(message.chat.id, 'Число должно быть больше "0"')
+        bot.send_message(message.chat.id, '👇👇👇👇👇👇👇👇👇👇', reply_markup=markup)
+        bot.send_message(message.chat.id, 'Какое количество единиц вы хотите конвертировать?\n'
+                                          'Введите нужное вам значение...')
         bot.register_next_step_handler(message, input_amount)
 
 
@@ -52,16 +46,27 @@ def callback(call):  # обработчик нажатых кнопок
         bot.register_next_step_handler(call.message, my_currency)  # вводим желаемый тип валюты
 
     elif call.data == 'options':
-        bot.send_message(call.message.chat.id, 'Варианты валют:')
-        bot.send_message(call.message.chat.id, '1. EUR/PLN польская злота')
-        bot.send_message(call.message.chat.id, '2. EUR/SEK шведская крона')
-        bot.send_message(call.message.chat.id, '3. EUR/TRY турецкая лира')
+        bot.send_message(call.message.chat.id, 'Возможные Варианты:')
+        bot.send_message(call.message.chat.id, '1. EUR/PLN польская злота\n'
+                                               '2. EUR/SEK шведская крона\n'
+                                               '3. EUR/TRY турецкая лира\n'
+                                               '4. RUB/TRY рубли в турецкие лиры')  # не по моей вине, сами попробуйте
+
+def input_amount(message):
+    global amount
+    try:
+        amount = int(message.text.strip())
+        bot.send_message(message.chat.id, 'Теперь выберите кнопку из меню')
+    except ValueError:
+        bot.send_message(message.chat.id, 'i_a: Неверный формат. Введите числовое значение')
+        bot.register_next_step_handler(message, input_amount)
+        return
 
 def my_currency(message):  # желаемая валюта
     try:
         values = message.text.upper().split('/')  # записываем значения через '/' в переменную при помощи пользовательского ввода message text
         result = currency.convert(amount, values[0], values[1])
-        bot.send_message(message.chat.id, f'Result {round(result, 2)}')
+        bot.send_message(message.chat.id, f'{values} = {round(result, 2)}')
     except Exception:
         bot.send_message(message.chat.id, 'my_curr: Неверное значение, введите пару заново')
         bot.register_next_step_handler(message, my_currency)  # вводим желаемый тип валюты
