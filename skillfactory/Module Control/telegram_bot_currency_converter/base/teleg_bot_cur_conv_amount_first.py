@@ -8,7 +8,9 @@ amount = 0  # первоначальное значение
 
 @bot.message_handler(commands=['start'])  # при вводе /start, запускаем функцию start
 def start(message):
-    bot.send_message(message.chat.id, 'Введите сумму')
+    bot.send_message(message.chat.id, '🤗 *** ДОБРО ПОЖАЛОВАТЬ *** 🤗')
+    bot.send_message(message.chat.id, '🏦ВАЛЮТНЫЙ БОТ КОНВЕРТЕР🏦')
+    bot.send_message(message.chat.id, 'Введите желаему сумму для конвертирования')
     bot.register_next_step_handler(message, input_amount)
 
 def input_amount(message):
@@ -29,8 +31,6 @@ def input_amount(message):
         btn5 = types.InlineKeyboardButton('🌐Варианты Валют🌐', callback_data='options')
         markup.add(btn1, btn2, btn3, btn4, btn5)  # 5 кнопок по (row_width=2)
 
-        bot.send_message(message.chat.id, '🤗 *** ДОБРО ПОЖАЛОВАТЬ *** 🤗')
-        bot.send_message(message.chat.id, '🏦ВАЛЮТНЫЙ БОТ КОНВЕРТЕР🏦')
         bot.send_message(message.chat.id, '♦️️♦️♦️️️️️️️НАШЕ МЕНЮ♦️️️♦️️♦️')
         bot.send_message(message.chat.id, '👇👇👇👇👇👇👇👇👇👇👇👇', reply_markup=markup)
         bot.send_message(message.chat.id, f'Вы хотите конвертировать {amount} единиц(у)')
