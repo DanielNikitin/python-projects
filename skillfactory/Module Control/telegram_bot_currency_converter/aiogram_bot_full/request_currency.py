@@ -30,3 +30,10 @@ def data_currency():
 if __name__ == '__main__':
     #convert_currency()
     data_currency()
+
+
+    response = requests.get(
+    f"{lat_api}?amount={amount}&from={from_currency}&to={to_currency}")
+
+    result = f"{amount} {from_currency} is {response.json()['rates'][to_currency]} {to_currency}"
+    await message.answer(result)

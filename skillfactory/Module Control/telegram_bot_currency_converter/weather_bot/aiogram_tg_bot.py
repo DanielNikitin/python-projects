@@ -1,17 +1,18 @@
 import requests
 import datetime
-from config import tg_bot_token, open_weather_token
-from aiogram import Bot, types, Dispatcher, executor
+from config import bot_token, open_weather_token
+from aiogram import Router, F
+from aiogram.types import Message, CallbackQuery
+from aiogram.filters import Filter
 
-bot = Bot(token=weather_bot_token)
-dp = Dispatcher(bot)  # тот кто принимает сообщения
+bot = Bot(token=bot_token)
+dp = Dispatcher()
 
-@dp.message_handler(commands=["start"])
-async def start_commands(message: types.Message):
+@dp.message(F.text == '/start')
+async def start_commands(message: Message):
     await message.reply("yo")
 
-
-@dp.message_handler()
+@dp.message()
 async def get_weather(message: types.Message):
     try:
         # формируем запрос requests.get (получить)
@@ -40,5 +41,13 @@ async def get_weather(message: types.Message):
     except:
         await message.reply("\U00002620 check city name \U00002620")
 
+# Polling, т.е бесконечный цикл проверки апдейтов
+async def main():
+    await dp.start_polling(bot)
+
+# Функция main() запускается только в случае если скрипт запущен с этого файла
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print('Exit')
