@@ -1,12 +1,12 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from app.handlers import router
-from app.config import bot_token
+from app.config import bot_api
 
 
 # Polling, т.е бесконечный цикл проверки апдейтов
 async def main():
-    bot = Bot(token=bot_token)
+    bot = Bot(token=bot_api)
     dp = Dispatcher()
     dp.include_router(router)
     await dp.start_polling(bot)
