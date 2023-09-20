@@ -1,46 +1,55 @@
+# aiogram бот, F это фильтр (метод обращения, обработки)
 from aiogram import Router, F
+# types подключен для облегчения написания кода
+# Message метод, CallbackQuery для обработки нажатий клавиш
 from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Filter
 
-import requests, json
-from app.config import CURR_API, LAT_API
+import requests, json  # requests запросы, json обработка данных с сервера
+from app.config import CURR_API, LAT_API  # подключение config и данных из него
 
-import app.keyboards as kb
+import app.keyboards as kb  # подключение inlinekeyboards (кнопки)
 
-# Рутер это 'поисковик' среди директорий
+# Рутер это хендлер для параллельной работы, документация
+# https://mastergroosha.github.io/aiogram-3-guide/routers/
 router = Router()
 
 # Словари
-chat_data = {}
-user_states = {}
+chat_data = {}  # данные записанные пользователем в чат
+user_states = {}  # состояние пользователя
 
+# Команда /start и Прикрепление кнопок
 @router.message(F.text == '/start')
 async def start(message: Message):
-    await message.answer('Welcome to the DCG Bot!', reply_markup=kb.main)
+    await message.answer('Welcome to the DCG Currency Converter Bot!', reply_markup=kb.main)
     await message.answer('Нажмите на любую кнопку из Меню')
 
 
 @router.message(F.text == 'EUR TO USD')
 async def eur_to_usd(message: Message):
     await message.answer('EUR TO USD')
-    from_currency = str('EUR')
-    to_currency = str('USD')
+    user_states[message.chat.id] = None  # Сбрасываем состояние пользователя
+    quote = str('EUR')
+    base = str('USD')
     amount = float('1')
 
     responce = requests.get(
-        f"{LAT_API}?amount={amount}&from={from_currency}&to={to_currency}")
-    await message.answer(f"{amount} {from_currency} is {round(responce.json()['rates'][to_currency], 2)} {to_currency}")
+        f"{LAT_API}?amount={amount}&from={quote}&to={base}")
+    await message.answer(f"{amount} {quote} is {round(responce.json()['rates'][base], 2)} {base}")
+
+# base (to currency)
+# quote (from_currency)
 
 @router.message(F.text == 'USD TO EUR')
 async def usd_to_eur(message: Message):
     await message.answer('USD TO EUR')
-    from_currency = str('USD')
-    to_currency = str('EUR')
+    user_states[message.chat.id] = None  # Сбрасываем состояние пользователя
+    quote = str('USD')
+    base = str('EUR')
     amount = float('1')
 
     responce = requests.get(
-        f"{LAT_API}?amount={amount}&from={from_currency}&to={to_currency}")
-    await message.answer(f"{amount} {from_currency} is {round(responce.json()['rates'][to_currency], 2)} {to_currency}")
+        f"{LAT_API}?amount={amount}&from={quote}&to={base}")
+    await message.answer(f"{amount} {quote} is {round(responce.json()['rates'][base], 2)} {base}")
 
 
 @router.message(F.text == 'Другой Вариант')
@@ -49,6 +58,7 @@ async def handle_input(message: Message):
     user_states[message.chat.id] = "waiting_for_input"
     await message.answer("Введите данные для конвертации:\n[валюта 1] [валюта 2] [сумма]")
 
+# в документации не нашел способа удобнее, поэтому сделал проверку на лямбде
 @router.message(lambda message: user_states.get(message.chat.id) == "waiting_for_input")
 async def start_input(message: Message):
     user_state = user_states.get(message.chat.id)
@@ -69,6 +79,7 @@ async def start_input(message: Message):
                     # делаем requests запрос по заданному API
                     responce = requests.get(
                         f"{LAT_API}?amount={amount}&from={quote}&to={base}")
+                    # round нужен для округления результата с двумя значениями после запятой
                     result = f"{amount} {quote} is {round(responce.json()['rates'][base], 2)} {base}"
                     await message.answer(f"Result: {result}")
 
@@ -78,10 +89,9 @@ async def start_input(message: Message):
                 except ValueError:
                     await message.reply("Ошибка: Неверный формат суммы")
             else:
+                # можно прикрутить ИИ чтобы пользователь не мог ошибиться в плане орфографии,
+                # не выводить ошибку об 'битокоин' а дать возможность ИИ 'предполагать' вариант
                 await message.reply("Формат ввода:\n[eur] [usd] [100]")
-
-                    # ****** ДОРАБОТАТЬ ********
-        #user_states[message.chat.id] = None  # Сбрасываем состояние пользователя
 
     except Exception as e:
         await message.reply("Неверный ввод.\n Формат ввод: [eur] [usd] [100]")
@@ -105,4 +115,4 @@ async def data_currency(message: Message):
 # Хэндлер без фильтра, сработает, если ни один выше не сработает.
 @router.message()
 async def welcome(message: Message):
-    await message.answer('Press to -> /start')
+    await message.answer('Dont type, just Press -> /start')

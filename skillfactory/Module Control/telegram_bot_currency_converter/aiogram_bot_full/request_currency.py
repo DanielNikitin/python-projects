@@ -12,8 +12,7 @@ def convert_currency():
     responce = requests.get(
     f"https://api.frankfurter.app/latest?amount={amount}&from={from_currency}&to={to_currency}")
 
-    print(
-    f"{amount} {from_currency} is {responce.json()['rates'][to_currency]} {to_currency}")
+    print(f"{amount} {from_currency} is {responce.json()['rates'][to_currency]} {to_currency}")
 
 
 def data_currency():
@@ -30,10 +29,3 @@ def data_currency():
 if __name__ == '__main__':
     #convert_currency()
     data_currency()
-
-
-    response = requests.get(
-    f"{lat_api}?amount={amount}&from={from_currency}&to={to_currency}")
-
-    result = f"{amount} {from_currency} is {response.json()['rates'][to_currency]} {to_currency}"
-    await message.answer(result)
