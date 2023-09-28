@@ -11,6 +11,8 @@ from app.config import CURR_API, LAT_API  # подключение config и д�
 
 import app.keyboard as kb  # подключение inlinekeyboards (кнопки)
 
+
+
 # Рутер это хендлер для параллельной работы, документация
 # https://mastergroosha.github.io/aiogram-3-guide/routers/
 router = Router()
@@ -20,7 +22,12 @@ chat_data = {}  # данные записанные пользователем �
 user_states = {}  # состояние пользователя
 
 # Список
-trafo_id = [1035107072]  # Daniel
+trafo_id = [1035107072, # Daniel
+            103200201   # Dima
+           ]
+
+#                        MAIN                          #
+#  **************************************************  #
 
 # Команда /start и Прикрепление кнопок
 @router.message(F.text == '/start')
@@ -29,29 +36,57 @@ async def start(message: Message):
     await message.answer('Нажмите на любую кнопку из Меню')
     await message.answer('http://dcg.ee')
 
-@router.message(F.text == '/myid')
+@router.message(F.text == 'My ID')
 async def my_id(message: Message):
     await message.answer(f'Your ID: {message.from_user.id}')
+    print(f'{message.from_user.id}; {message.from_user.username}')
 
 @router.message(F.text == 'Прочее')
 async def other(message: Message):
     await message.answer('...', reply_markup=kb.other)
 
-#  **************************************************
+#                   MAINTENANCE                        #
+#  **************************************************  #
 
-class Admin(Filter):
+class Maintenance(Filter):
     # фильтр проверяет сообщения в чате
     async def __call__(self, message: Message) -> bool:
         # если сообщение от trafo_id то возвращает True
         return message.from_user.id in trafo_id
 
-@router.message(Admin(), F.text == 'Maintenance')
+@router.message(Maintenance(), F.text == 'Maintenance')
 # если Admin = True, и message == status
-async def admin_status(message: Message):
-    await message.answer('Admin Status OK', reply_markup=kb.maintenance)
+async def maintenance_status(message: Message):
+    await message.answer('Maintenance Status OK', reply_markup=kb.maintenance)
+
+#------
+
+@router.message(F.text == 'Jig Calibration')
+async def jig_calib(message: Message):
+    await message.answer("...", reply_markup=kb.jig)
+
+#------
+
+@router.message(F.text == 'Ввести номер JIG')
+async def jig_number(message: Message):
+    await message.answer("Ввести номер JIG")
+
+@router.message(F.text == 'Список рабочих мест')
+async def list_places(message: Message):
+    await message.answer("Список рабочих мест")
+
+@router.message(F.text == 'Список JIG')
+async def jig_list(message: Message):
+    await message.answer("Список JIG")
+
+@router.message(F.text == 'Чертежи')
+async def jig_blueprint(message: Message):
+    await message.answer("Чертежи")
 
 
-#  **************************************************
+
+#               CURRENCY CONVERTER                     #
+#  **************************************************  #
 
 @router.message(F.text == 'Currency Converter')
 async def converter(message: Message):
@@ -71,7 +106,6 @@ async def eur_to_usd(message: Message):
         f"{LAT_API}?amount={amount}&from={quote}&to={base}")
     await message.answer(f"{amount} {quote} is {round(responce.json()['rates'][base], 2)} {base}")
 
-
 @router.message(F.text == 'USD TO EUR')
 async def usd_to_eur(message: Message):
     await message.answer('USD TO EUR')
@@ -83,7 +117,6 @@ async def usd_to_eur(message: Message):
     responce = requests.get(
         f"{LAT_API}?amount={amount}&from={quote}&to={base}")
     await message.answer(f"{amount} {quote} is {round(responce.json()['rates'][base], 2)} {base}")
-
 
 @router.message(F.text == 'Другой Вариант')
 async def handle_input(message: Message):
@@ -143,8 +176,9 @@ async def data_currency(message: Message):
     # Отправляем столбец как одно сообщение
     await message.answer(currency_list)
 
-#  **************************************************
 
+#                      PRESS START                     #
+#  **************************************************  #
 
 @router.message()
 async def welcome(message: Message):

@@ -5,7 +5,7 @@ from aiogram.types import (ReplyKeyboardMarkup,
 
 main_kb = [
     [KeyboardButton(text='1'),
-     KeyboardButton(text='/myid')],
+     KeyboardButton(text='My ID')],
     [KeyboardButton(text='Maintenance'),
      KeyboardButton(text='Прочее')]
           ]
@@ -17,7 +17,7 @@ main = ReplyKeyboardMarkup(keyboard=main_kb,
 # --------------
 
 other_kb = [
-    [KeyboardButton(text='Currency Converter')],
+    [KeyboardButton(text='Currency Converter')]
            ]
 
 other = ReplyKeyboardMarkup(keyboard=other_kb,
@@ -46,9 +46,21 @@ socials = InlineKeyboardMarkup(inline_keyboard=socials_kb)
 # --------------
 
 maintenance_kb = [
-    [KeyboardButton(text='JIG Calib'),
-     KeyboardButton(text='Cut')]
+    [KeyboardButton(text='Jig Calibration'),
+     KeyboardButton(text='Reserv')]
            ]
 
 maintenance = ReplyKeyboardMarkup(keyboard=maintenance_kb,
+                            resize_keyboard=True)
+
+# --------------
+
+jig_kb = [
+    [KeyboardButton(text='Ввести номер JIG')],
+    [KeyboardButton(text='Список рабочих мест')],
+    [KeyboardButton(text='Список JIG')],
+    [KeyboardButton(text='Чертежи')]
+           ]
+
+jig = ReplyKeyboardMarkup(keyboard=jig_kb,
                             resize_keyboard=True)
