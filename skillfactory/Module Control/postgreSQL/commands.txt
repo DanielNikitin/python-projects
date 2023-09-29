@@ -1,7 +1,10 @@
 service postgresql  - команды
 service postgresql status  - состояние
 
+-------------------
+
 sudo -i -u postgres  - войти в postgres
+
 psql - зайти в консоль
 
 \l - список баз данных
@@ -9,9 +12,14 @@ q - чтобы выйти из списка
 
 \q - чтобы выйти из баз данных
 
-createdb "name" - создать базу данных
+------ DATABASE CONTROLL
 
------- USERS in psql
+внутри postgres@abashed-voyage можно создать или удалить базу данных
+
+createdb "name" - создать бд
+dropdb "name" - удалить бд
+
+------ USERS in psql ------
 
 \du - список пользователей
 
