@@ -8,6 +8,7 @@ from aiogram.types import (ReplyKeyboardMarkup,
 
 def root_keyboard(user_id, root_id, maintenance_id):
     main_kb = [
+        [KeyboardButton(text='Личные Расходы')],
         [KeyboardButton(text='My ID'),
         KeyboardButton(text='Прочее')],
         [KeyboardButton(text='Обновления')]
@@ -24,20 +25,21 @@ def root_keyboard(user_id, root_id, maintenance_id):
                                input_field_placeholder='daily customs garage © 2023')
 
 # /////////////////////////////////////////
-# -------------- OTHER
+# -------------- OTHER --------------
 
 other_kb = [
-    [KeyboardButton(text='Currency Converter')]
+    [KeyboardButton(text='Currency Converter')],
+    [KeyboardButton(text='Back')]
            ]
 
 other = ReplyKeyboardMarkup(keyboard=other_kb,
                             resize_keyboard=True)
 
-# -------------- CONVERTER
+# -------------- CONVERTER --------------
 
 converter_kb = [
     [KeyboardButton(text='EUR TO USD')],
-     [KeyboardButton(text='USD TO EUR')],
+    [KeyboardButton(text='USD TO EUR')],
     [KeyboardButton(text='Другой Вариант'),
      KeyboardButton(text='Доступные валюты')],
     [KeyboardButton(text='Back')]
@@ -60,7 +62,8 @@ socials = InlineKeyboardMarkup(inline_keyboard=socials_kb)
 
 maintenance_kb = [
     [KeyboardButton(text='Jig Calibration'),
-     KeyboardButton(text='Reserv')]
+     KeyboardButton(text='Reserv')],
+    [KeyboardButton(text='Back')]
            ]
 
 maintenance = ReplyKeyboardMarkup(keyboard=maintenance_kb,
@@ -85,7 +88,8 @@ jig = ReplyKeyboardMarkup(keyboard=jig_kb,
 
 root_kb = [
     [KeyboardButton(text='Database Menu'),
-     KeyboardButton(text='Reserv')]
+     KeyboardButton(text='Reserv')],
+    [KeyboardButton(text='Back')]
            ]
 
 root = ReplyKeyboardMarkup(keyboard=root_kb,
@@ -106,9 +110,9 @@ database_menu = ReplyKeyboardMarkup(keyboard=database_menu_kb,
 # -------------- Database
 
 database_kb = [
-    [KeyboardButton(text='Add')],
-    [KeyboardButton(text='Remove')],
-    [KeyboardButton(text='List')],
+    [KeyboardButton(text='D.Add')],
+    [KeyboardButton(text='D.List')],
+    [KeyboardButton(text='D.Remove')],
     [KeyboardButton(text='Back')]
            ]
 
@@ -118,9 +122,9 @@ database = ReplyKeyboardMarkup(keyboard=database_kb,
 # -------------- Table
 
 table_kb = [
-    [KeyboardButton(text='Add')],
-    [KeyboardButton(text='Remove')],
-    [KeyboardButton(text='List')],
+    [KeyboardButton(text='T.Add')],
+    [KeyboardButton(text='T.List')],
+    [KeyboardButton(text='T.Remove')],
     [KeyboardButton(text='Back')]
            ]
 
@@ -130,9 +134,9 @@ table = ReplyKeyboardMarkup(keyboard=table_kb,
 # -------------- Parts
 
 parts_kb = [
-    [KeyboardButton(text='Add')],
-    [KeyboardButton(text='Remove')],
-    [KeyboardButton(text='List')],
+    [KeyboardButton(text='P.Add')],
+    [KeyboardButton(text='P.List')],
+    [KeyboardButton(text='P.Remove')],
     [KeyboardButton(text='Back')]
            ]
 

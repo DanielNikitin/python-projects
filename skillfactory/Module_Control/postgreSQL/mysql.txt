@@ -1,0 +1,32 @@
+----------------------  MYSQL
+
+Войдите в командную оболочку MySQL с помощью команды:
+mysql -u root -p
+Это предполагает, что вы входите как пользователь root.
+
+CREATE DATABASE имя_базы_данных;
+exit; / quit;
+
+чтобы получить список всех баз данных
+SHOW DATABASES;
+
+USE имя_базы_данных; - зайти в базу данных
+
+Выдать привелегии
+GRANT ALL PRIVILEGES ON your_database.* TO 'root'@'localhost';
+
+Какие пользователи есть
+SELECT user, host FROM mysql.user;
+
+USE trafo_db
+SHOW TABLES;
+----
+sudo mysql -u root -p
+123321aA!
+And then updating the password using:
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'new-password';
+Once this is done, stop and start the MySQL server.
+
+sudo service mysql stop
+sudo service mysql start

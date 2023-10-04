@@ -1,0 +1,60 @@
+https://pgtune.leopard.in.ua/#/
+https://suriyal.com/postgresql-connection-refused-or-timeout-expired/
+
+----------------------  POSTGRESQL
+pip install psycopg2-binary
+import psycopg2
+
+установить
+sudo apt-get install postgresql postgresql-contrib
+статус
+sudo service postgresql status
+запустить
+sudo service postgresql restart
+
+------------------------
+
+XM8HC5etpUZn
+
+service postgresql  - команды
+
+sudo reboot
+
+-------------------
+
+sudo -i -u postgres  - войти в postgres
+
+psql - зайти в консоль
+
+man psql - команды psql
+
+\l - список баз данных
+q - чтобы выйти из списка
+
+\q - чтобы выйти из баз данных
+
+------ DATABASE CONTROLL
+
+внутри postgres@abashed-voyage можно создать или удалить базу данных
+
+createdb "name" - создать бд
+dropdb "name" - удалить бд
+
+------ USERS in psql ------
+
+\du - список пользователей
+
+ALTER USER имя WITH PASSWORD 'пароль';  - изменить пароль
+CREATE USER имя WITH PASSWORD 'пароль';  - создать юзера
+ALTER USER имя WITH SUPERUSER;  - выдать привелегию Superuser
+DROP USER имя;  - удалить пользователя
+
+------------
+
+Чтобы выйти на главный экран ctrl + D
+
+---------
+
+cd /etc/postgresql/14/main/
+sudo nano postgresql.conf
+postgresql.conf file and pg_hba.conf

@@ -1,7 +1,5 @@
 import psycopg2
-from config import *
-
-# pip install psycopg2-binary
+from app.config import *
 
 conn = None
 
@@ -10,12 +8,11 @@ db_name = input("Введите имя БД: ")
 # Connect to the default "postgres" database without starting a new transaction
 conn = psycopg2.connect(
     host=host,
-    port=port,
+    port="5432",
     user=user,
     password=password,
     database=f"{db_name}"
 )
-conn.set_isolation_level(0)  # Устанавливаем уровень изоляции
 print("Connection to the database was successful.")
 
 try:
