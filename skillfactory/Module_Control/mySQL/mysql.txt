@@ -1,5 +1,17 @@
 ----------------------  MYSQL
 
+----- SCREEN
+
+screen name : Запускает новую сессию "screen".
+screen -ls : Показывает список активных сессий "screen".
+Ctrl+a d : Отсоединяет текущую сессию "screen" (без завершения работы в ней).
+screen -r : вернуться к ней позже с помощью
+screen -d name : выключить окно, но не завершить процесс
+Ctrl+a k : Завершает текущее окно
+
+
+----- DATABASE
+
 Войдите в командную оболочку MySQL с помощью команды:
 mysql -u root -p
 Это предполагает, что вы входите как пользователь root.
@@ -20,7 +32,9 @@ SELECT user, host FROM mysql.user;
 
 USE trafo_db
 SHOW TABLES;
-----
+
+------ SUDO
+
 sudo mysql -u root -p
 123321aA!
 And then updating the password using:
