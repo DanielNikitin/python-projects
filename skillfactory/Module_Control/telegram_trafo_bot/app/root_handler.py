@@ -341,15 +341,12 @@ async def tb_remove_name(message: Message):
 
 
 # -------------- PARTS --------------
-# нажал клавишу Parts, ввёл имя таблицы, сразу выходит Parts List.
-# должно быть так, нажал клавишу Parts, ввёл имя таблицы, и тебя переносит в меню kb_parts.
-# В этом меню уже выбираешь что делать дальше.
 
 @root_router.message(F.text == 'Parts')
 async def db_parts(message: Message):
     print(f"{message.from_user.id} entered to Parts")
 
-    await tb_list(message)
+    await tb_list(message)  # Call table list first for help with choose
 
     await message.answer("Введите Имя Таблицы или введите 'exit' для выхода: ")
 
