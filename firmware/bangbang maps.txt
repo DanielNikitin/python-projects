@@ -10,6 +10,7 @@ X 2000-7000
 Y 0-15
 Z -33*
 
+
 -------------------
 
 ************** 'more fuel = louder bangs', 'more air = more number of pops', or 'less timing = more rapid pops' etc **************
@@ -151,10 +152,6 @@ KFTVSA - Retard time for over-run (2.0 all)
 KFTVSAKAT - Over-run delay time (2000 all)
 
 -----------------------------------------------------
-
-
-
-
 
 
 
