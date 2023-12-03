@@ -1,27 +1,29 @@
 import socket
-
+import pickle
+from player import Player
 
 class Network:
-
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.host = "localhost"
-        self.port = 5555
-        self.addr = (self.host, self.port)
-        self.id = self.connect()
+        self.server = "localhost"
+        self.port = 10000
+        self.addr = (self.server, self.port)
+        self.local_player = self.connect()
+
+    def get_local_player(self):
+        return self.local_player
 
     def connect(self):
-        self.client.connect(self.addr)
-        return self.client.recv(2048).decode()
+        try:
+            self.client.connect(self.addr)
+            return pickle.loads(self.client.recv(2048))
+        except:
+            self.client.close()
+            return Player(0, 0, 0, 0, 0, 0, (0, 0, 0))
 
     def send(self, data):
-        """
-        :param data: str
-        :return: str
-        """
         try:
-            self.client.send(str.encode(data))
-            reply = self.client.recv(2048).decode()
-            return reply
+            self.client.send(pickle.dumps(data))
+            return pickle.loads(self.client.recv(2048))
         except socket.error as e:
-            return str(e)
+            print(e)

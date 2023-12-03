@@ -16,7 +16,7 @@ S = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 S.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # Set constants
-PORT = 5555
+PORT = 10000
 
 BALL_RADIUS = 5
 START_RADIUS = 7
