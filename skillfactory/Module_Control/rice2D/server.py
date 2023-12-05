@@ -14,14 +14,13 @@ try:
 except socket.error as e:
     str(e)
 
-s.listen(50)
+s.listen(5)
 print("Waiting for a connection, Server Started")
 
 
-players = [Player(0,0,50,50,(255,0,0)),
-           Player(100,100, 50,50, (0,0,255)),
-           Player(200, 200, 50, 50, (0, 255, 0)),
-           Player(300, 300, 50, 50, (100, 255, 0))]
+players = [Player(0,0,50,50,(255,0,0), "123"),
+           Player(100,100, 50,50, (0,0,255), "456"),
+           Player(200, 200, 50, 50, (0, 255, 0), 789)]
 
 def threaded_client(conn, player):
     conn.send(pickle.dumps(players[player]))

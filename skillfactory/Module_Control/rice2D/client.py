@@ -1,11 +1,12 @@
 import pygame
 from network import Network
-from player import Player
 
 width = 500
 height = 500
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
+
+pygame.init()
 
 
 def redrawWindow(win, players):
@@ -14,22 +15,30 @@ def redrawWindow(win, players):
         player.draw(win)
     pygame.display.update()
 
+
 def main():
     run = True
     n = Network()
-    player = n.getP()  # Используйте player вместо p
-    clock = pygame.time.Clock()
+    p = n.getP()
 
-    while run:
-        clock.tick(60)
-        players = n.send(player)  # Получайте список всех игроков
+    try:
+        players = n.send(p)
+        clock = pygame.time.Clock()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
+        while run:
+            clock.tick(60)
+            players = n.send(p)
 
-        player.move()
-        redrawWindow(win, players)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    pygame.quit()
+
+            p.move()
+            redrawWindow(win, players)
+
+    except Exception as e:
+        print(f"Client Error :: {e}")
 
 main()
+
