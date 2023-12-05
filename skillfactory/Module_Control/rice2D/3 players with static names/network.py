@@ -8,7 +8,7 @@ class Network:
         self.server = "localhost"
         self.port = 10000
         self.addr = (self.server, self.port)
-        self.p = self.connect()  # p - from client | connect() activate func
+        self.p = self.connect()
 
     def getP(self):
         return self.p
@@ -19,7 +19,7 @@ class Network:
             return pickle.loads(self.client.recv(2048))
         except:
             self.client.close()
-            return Player(0, 0, 0, 0, (0, 0, 0), None)
+            return Player(0, 0, 0, 0, (0, 0, 0))  # <- в конце None
 
     def send(self, data):
         try:

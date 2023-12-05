@@ -3,16 +3,16 @@ from network import Network
 
 width = 500
 height = 500
-win = pygame.display.set_mode((width, height))
+screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
 pygame.init()
 
 
-def redrawWindow(win, players):
-    win.fill((255, 255, 255))
+def redrawWindow(screen, players):
+    screen.fill('gray25')  # 25 оттенок серого цвета задний фон
     for player in players:
-        player.draw(win)
+        player.draw(screen)
     pygame.display.update()
 
 
@@ -35,7 +35,7 @@ def main():
                     pygame.quit()
 
             p.move()
-            redrawWindow(win, players)
+            redrawWindow(screen, players)
 
     except Exception as e:
         print(f"Client Error :: {e}")

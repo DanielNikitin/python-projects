@@ -17,7 +17,8 @@ except socket.error as e:
 s.listen(5)
 print("Waiting for a connection, Server Started")
 
-players = [Player(50,50,50,50,(255,0,0), "123"),
+
+players = [Player(0,0,50,50,(255,0,0), "123"),
            Player(100,100, 50,50, (0,0,255), "456"),
            Player(200, 200, 50, 50, (0, 255, 0), "789")]
 
