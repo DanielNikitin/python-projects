@@ -3,42 +3,41 @@ from network import Network
 
 width = 500
 height = 500
-win = pygame.display.set_mode((width, height))
+screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
-pygame.init()
+pygame.init()  # инициализация игры
 
 
-def redrawWindow(win, players):
-    win.fill((255, 255, 255))
+def redrawWindow(screen, players):
+    screen.fill('gray25')
     for player in players:
-        player.draw(win)
+        player.draw(screen)
     pygame.display.update()
 
 
 def main():
     run = True
-    n = Network()
-    p = n.getP()
+    n = Network()  # обращаемся к network.py (связующий)
+    p = n.getP()  # обращаемся к Player из player.py а так же соединяемся с сервером
 
     try:
-        players = n.send(p)
         clock = pygame.time.Clock()
 
         while run:
             clock.tick(60)
-            players = n.send(p)
+            players = n.send(p)  # отправляет данные о состоянии игрока серверу и получаем данные от сервера
+            print(n.send(p))
 
-            for event in pygame.event.get():
+            for event in pygame.event.get():  # отслеживаем события
                 if event.type == pygame.QUIT:
                     run = False
                     pygame.quit()
 
-            p.move()
-            redrawWindow(win, players)
+            p.move()  #  через network.py мы можем обратиться к player.py и выполнить функцию move
+            redrawWindow(screen, players)
 
     except Exception as e:
         print(f"Client Error :: {e}")
 
 main()
-

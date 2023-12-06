@@ -14,8 +14,6 @@ class Player:
         self.name = name
         self.id = _id
 
-        self.status = "active"
-
         # Инициализируем инвентарь как словарь
         self.inventory = {"coins": 0}
 
@@ -30,13 +28,7 @@ class Player:
         pygame.draw.rect(screen, self.color, self.rect)  # player model
 
         font = pygame.font.Font(pygame.font.get_default_font(), 20)
-
-        # Отображаем статус только если он равен "sleep"
-        if self.status == "sleep":
-            text = font.render(f"{self.name} ({self.status})", True, (0, 0, 0))
-        else:
-            text = font.render(self.name, True, (0, 0, 0))
-
+        text = font.render(self.name, True, (0, 0, 0))
         screen.blit(text, (self.x - -10, self.y - -20))  # nickname coordinate
 
     def move(self):
