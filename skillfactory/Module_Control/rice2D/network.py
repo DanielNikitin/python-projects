@@ -1,5 +1,6 @@
 import socket
 import pickle
+
 from player import Player
 
 class Network:
@@ -26,11 +27,11 @@ class Network:
     def send(self, data):  # отправляет данные о состоянии игрока серверу и получает обновленные данные о состоянии других игроков.
         try:
 
-            print(f"Sending to server :: {data}")
+            #print(f"Sending to server :: {data}")
             self.client.send(pickle.dumps(data))
 
             reply = pickle.loads(self.client.recv(2048))
-            print(f"Received from server :: {reply}")
+            #print(f"Received from server :: {reply}")
             return reply
 
         except socket.error as e:

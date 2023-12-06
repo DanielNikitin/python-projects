@@ -1,4 +1,5 @@
 import pygame
+
 from network import Network
 
 WIDHT_SERVER_WINDOW, HEIGHT_SERVER_ROOM = 300, 300  # серверное окно

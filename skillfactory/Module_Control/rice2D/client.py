@@ -27,7 +27,6 @@ def main():
         while run:
             clock.tick(60)
             players = n.send(p)  # отправляет данные о состоянии игрока серверу и получаем данные от сервера
-            print(n.send(p))
 
             for event in pygame.event.get():  # отслеживаем события
                 if event.type == pygame.QUIT:

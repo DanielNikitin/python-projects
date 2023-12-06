@@ -13,6 +13,7 @@ from colorama import Fore, init
 
 init()  # запуск colorama
 
+
 #offsets 13.09.2023
 dwForceJump = 0x52BBCD8
 dwLocalPlayer = 0xDEB99C
