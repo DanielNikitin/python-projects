@@ -27,6 +27,7 @@ def main():
         while run:
             clock.tick(60)
             players = n.send(p)  # отправляет данные о состоянии игрока серверу и получаем данные от сервера
+            print(n.send(p))
 
             for event in pygame.event.get():  # отслеживаем события
                 if event.type == pygame.QUIT:
@@ -34,8 +35,6 @@ def main():
                     pygame.quit()
 
             p.move()  #  через network.py мы можем обратиться к player.py и выполнить функцию move
-            p.change_size()
-
             redrawWindow(screen, players)
 
     except Exception as e:

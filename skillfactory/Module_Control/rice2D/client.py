@@ -9,24 +9,29 @@ pygame.display.set_caption("Client")
 pygame.init()  # инициализация игры
 
 
-def redrawWindow(screen, players):
+def redrawWindow(screen, players, cubes):
     screen.fill('gray25')
     for player in players:
         player.draw(screen)
+
+    for cube in cubes:
+        cube.draw(screen)
+
     pygame.display.update()
 
 
 def main():
     run = True
     n = Network()  # обращаемся к network.py (связующий)
-    p = n.getP()  # обращаемся к Player из player.py а так же соединяемся с сервером
+    p = n.getP()
 
     try:
         clock = pygame.time.Clock()
 
         while run:
             clock.tick(60)
-            players = n.send(p)  # отправляет данные о состоянии игрока серверу и получаем данные от сервера
+            players, cubes = n.send((p, p))
+
 
             for event in pygame.event.get():  # отслеживаем события
                 if event.type == pygame.QUIT:
@@ -34,7 +39,9 @@ def main():
                     pygame.quit()
 
             p.move()  #  через network.py мы можем обратиться к player.py и выполнить функцию move
-            redrawWindow(screen, players)
+            p.change_size()
+
+            redrawWindow(screen, players, cubes)
 
     except Exception as e:
         print(f"Client Error :: {e}")
