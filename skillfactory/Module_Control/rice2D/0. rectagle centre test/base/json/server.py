@@ -20,11 +20,9 @@ s.listen(24)
 print("SERVER STARTED")
 
 
-def threaded_client(conn, _id):
-    spawned_three = spawn_three(_id)
-
+def threaded_client(conn, three):
     # json dumps преобразовать в байты для отправки
-    conn.send(json.dumps(spawned_three.to_dict()).encode('utf-8'))
+    conn.send(json.dumps(spawn_three(three)).encode('utf-8'))  # отправляем спавн дерева и кодируем в байты
 
     while True:
         try:

@@ -19,17 +19,3 @@ class Three:
 
     def update(self):
         self.rect = (self.x, self.y, self.width, self.height)
-
-    def to_dict(self):
-        return {
-            'x': self.x,
-            'y': self.y,
-            'width': self.width,
-            'height': self.height,
-            'color': self.color,
-            'id': self.id
-        }
-
-    @classmethod
-    def from_dict(cls, data):
-        return cls(**data)
