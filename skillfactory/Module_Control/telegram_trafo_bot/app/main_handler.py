@@ -28,7 +28,7 @@ async def other(message: Message):
 @router.message(F.text == 'Обновления')
 async def updates(message: Message):
 
-    audio = FSInputFile(path=r'/tg_bot/dcg_bot/audio/test.mp3')
+    audio = FSInputFile(path=r'/tg_bot/dcg_bot/audio/0. rectagle centre test.mp3')
     await router.bot.send_audio(message.chat.id, audio=audio)
 
     message_text2 = (

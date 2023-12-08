@@ -25,7 +25,7 @@ def player_respawn(_id):
     width = 50
     height = 50
     color = (0, 255, 0)
-    name = 'test'
+    name = '0. rectagle centre test'
     return Player(x, y, width, height, color, name, _id)
 
 def threaded_client(conn, player):  # Ожидание подключения клиентов

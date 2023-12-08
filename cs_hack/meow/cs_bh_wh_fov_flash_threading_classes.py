@@ -42,7 +42,7 @@ def toggle():
                 pm.write_float(glow + entityglowing * 0x38 + 0x14, float(1))
                 pm.write_int(glow + entityglowing * 0x38 + 0x28, 1)
     except pymem.exception.ProcessNotFound:
-        print(Fore.YELLOW + current_time(), Fore.RED + '[test] csgo.exe process is not running!')
+        print(Fore.YELLOW + current_time(), Fore.RED + '[0. rectagle centre test] csgo.exe process is not running!')
 
 def Thread():
     while True:
