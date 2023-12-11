@@ -3,9 +3,7 @@ import pickle
 
 from _thread import *
 from server_func import *
-
-# pickle dumps преобразовать в байты для отправки
-# pickle loads преобразовать байты в нормальный текст
+from player import Player
 
 server_ip = "localhost"
 port = 10000
@@ -19,17 +17,12 @@ except socket.error as e:
     print(str(e))
 
 
-# создадим 5 деревьев
-spawn_tree()
-spawn_ore()
-
 s.listen(5)
 print("SERVER STARTED")
 
 
 def threaded_client(conn):
     # отправляем данные клиенту об этом
-    conn.send(pickle.dumps((tree_list, ore_list)))
 
     while True:
         try:
@@ -41,15 +34,11 @@ def threaded_client(conn):
                 break
             else:
 
-                if loaded_data == 'r':
-                    delete_tree()
-                    delete_ore()
-
                 print("Received: ", rec_data)
                 print("Sending : ", (tree_list, ore_list))
 
 
-            conn.sendall(pickle.dumps((tree_list, ore_list)))
+            conn.sendall(pickle.dumps((tree_list)))
 
         except:
             break

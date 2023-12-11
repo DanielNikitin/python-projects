@@ -8,14 +8,13 @@ from ore import Ore
 width = 500
 height = 500
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Client 1")
+pygame.display.set_caption("Client 2")
 
 
 def redrawWindow(screen, trees, ores):  # рисуем деревья
     screen.fill('gray25')
 
     try:
-
         for tree in trees:  # находим дерево в списке деревьев
             tree.draw(screen)  # отображаем его в игровом мире клиента
 
@@ -30,11 +29,14 @@ def redrawWindow(screen, trees, ores):  # рисуем деревья
 
 def main():
     run = True
+    n = Network()
+
     clock = pygame.time.Clock()
 
-    n = Network()
     try:
+
         while run:
+
             clock.tick(60)
 
             for event in pygame.event.get():

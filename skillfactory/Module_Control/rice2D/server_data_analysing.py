@@ -3,7 +3,7 @@ import pickle
 import random
 
 from _thread import *
-from player import Player
+
 from server_config import *
 from server_func import *
 
@@ -19,9 +19,6 @@ except socket.error as e:
 
 s.listen(24)
 print("SERVER STARTED")
-
-# Список кубов
-builded_cubes = []
 
 
 def threaded_client(conn, player):  # Ожидание подключения клиентов

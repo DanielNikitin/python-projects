@@ -1,7 +1,4 @@
 import pygame
-#import random
-import time
-
 
 class Player:
     def __init__(self, x, y, width, height, color, name, _id):
@@ -77,20 +74,25 @@ class Player:
                 self.status = "crowl" if self.status == "active" else "active"  # меняем статус
                 self.last_status_change_time = current_time  # Обновляет время последнего изменения статуса
 
-
-
     def move(self):
-        keys = pygame.key.get_pressed()  # текущее состояние всех клавиш
+        keys = pygame.key.get_pressed()
+
+        # Очищаем множество клавиш при каждом движении
+        #self.keys.clear()
 
         if keys[pygame.K_a]:
             self.x -= self.vel
+
         if keys[pygame.K_d]:
             self.x += self.vel
+
         if keys[pygame.K_w]:
             self.y -= self.vel
+
         if keys[pygame.K_s]:
             self.y += self.vel
+
         self.update()
 
-    def update(self):
-        self.rect = (self.x, self.y, self.width, self.height)
+    def get_position(self):
+        return self.x, self.y, self.vel

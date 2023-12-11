@@ -1,6 +1,6 @@
 import pygame
 
-class Player:
+class Tree:
     def __init__(self, x, y, width, height, color, _id):
         self.x = x
         self.y = y
@@ -14,11 +14,18 @@ class Player:
 
     # ------ TERMINAL DATA
     def __str__(self):
-        return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.id})"
-
+        return f"Tree({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.id})"
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
+
+    def damage(self):
+        self.hp -= 1
+        print("Tree :: -1 hp")
+
+    def check_death(self):
+        if self.hp <= 0:
+            print("Tree destroyed")
 
     def update(self):
         self.rect = (self.x, self.y, self.width, self.height)
