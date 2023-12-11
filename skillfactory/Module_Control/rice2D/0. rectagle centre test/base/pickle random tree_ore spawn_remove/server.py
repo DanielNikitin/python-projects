@@ -4,6 +4,8 @@ import pickle
 from _thread import *
 from server_func import *
 
+# pickle dumps преобразовать в байты для отправки
+# pickle loads преобразовать байты в нормальный текст
 
 server_ip = "localhost"
 port = 10000
@@ -18,31 +20,36 @@ except socket.error as e:
 
 
 # создадим 5 деревьев
-spawn_trees()
+spawn_tree()
+spawn_ore()
 
 s.listen(5)
 print("SERVER STARTED")
 
 
 def threaded_client(conn):
-    # pickle dumps преобразовать в байты для отправки
     # отправляем данные клиенту об этом
-    conn.send(pickle.dumps(tree_list))
+    conn.send(pickle.dumps((tree_list, ore_list)))
 
     while True:
         try:
             rec_data = conn.recv(2048)  # получили байты
-            #loaded_data = pickle.loads(rec_data)  # изменили байты в нормальный вид
-            #reply = rec_data  # отправили новую data
+            loaded_data = pickle.loads(rec_data)  # переводим в нормальный текст
 
             if not rec_data:
                 print("Disconnected")
                 break
             else:
-                print("Received: ", rec_data)
-                print("Sending : ", tree_list)
 
-            conn.sendall(pickle.dumps(tree_list))
+                if loaded_data == 'r':
+                    delete_tree()
+                    delete_ore()
+
+                print("Received: ", rec_data)
+                print("Sending : ", (tree_list, ore_list))
+
+
+            conn.sendall(pickle.dumps((tree_list, ore_list)))
 
         except:
             break
