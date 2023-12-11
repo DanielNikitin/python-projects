@@ -11,19 +11,15 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client 1")
 
 
-def redrawWindow(screen, trees, ores):  # рисуем деревья
+def redrawWindow(screen):  # рисуем деревья
     screen.fill('gray25')
 
     try:
 
-        for tree in trees:  # находим дерево в списке деревьев
-            tree.draw(screen)  # отображаем его в игровом мире клиента
-
-        for ore in ores:
-            ore.draw(screen)
+        print('hello:)')
 
     except Exception as se:
-        print(f"for tree in trees :: {se}")
+        print(f"redrawWindow :: {se}")
 
     pygame.display.update()  # обновляем состояние экрана
 
@@ -53,7 +49,7 @@ def main():
             objects = n.send_and_rec('')
             trees, ores = objects
 
-            redrawWindow(screen, trees, ores)  # обновляем экран
+            redrawWindow(screen)  # обновляем экран
 
     except Exception as e:
         print(f"main :: {e}")

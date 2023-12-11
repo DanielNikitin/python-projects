@@ -30,7 +30,6 @@ def player_respawn(_id):
 
 def threaded_client(conn, player):  # Ожидание подключения клиентов
     conn.send(pickle.dumps(player_respawn(player)))  # Клиенту отправляется начальное состояние игрока через pickle
-    reply = ""
 
     while True:  # Сервер ожидает и принимает данные от клиента,
         # обновляет состояние игрока и отправляет обновленные данные всем клиентам

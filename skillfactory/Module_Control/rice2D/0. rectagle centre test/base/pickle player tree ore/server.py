@@ -28,7 +28,6 @@ print("SERVER STARTED")
 
 
 def threaded_client(conn):
-    player_id = len(player_list) +1
     # отправляем данные клиенту об этом
     conn.send(pickle.dumps((tree_list, ore_list)))
 
@@ -41,7 +40,10 @@ def threaded_client(conn):
                 print("Disconnected")
                 break
             else:
-                handle_client_action(loaded_data, player_id)
+
+                if loaded_data == 'r':
+                    delete_tree()
+                    delete_ore()
 
                 print("Received: ", rec_data)
                 print("Sending : ", (tree_list, ore_list))
