@@ -21,28 +21,27 @@ class Network:
         try:
             self.client.connect(self.addr)  # подключаемся к серверу
             return pickle.loads(self.client.recv(2048)) # получаем данные клиента
-        except:
-            self.client.close()
+        except:  # если не получили
+            self.client.close()  # закрыли клиент
             print("** SERVER IS SHUTTED DOWN **")
 
 #   -------- Отправка и Получение Ответа
-    def send_and_rec(self, data):
+    def send_and_rec(self, rec_data):
         try:
-            print(f"Sending to server :: {data}")
-            self.client.send(pickle.dumps(data))
+            print(f"Sending to server :: {rec_data}")
+            self.client.send(pickle.dumps(rec_data))  # отправляем байты
 
-            reply = pickle.loads(self.client.recv(2048))
-            print(f"Received from server :: {reply}")
-            return reply  # отправляем то что получилось после ответа
+            load_data = pickle.loads(self.client.recv(2048))  # переведенная дата в нормальный вид
+            print(f"Received from server :: {load_data}")
+            return load_data  # отправляем то что получилось после ответа
         except socket.error as e:
             print(e)
 
 #   -------- Только Отправка Даты
-    def send(self, data):
+    def send(self, rec_data):
         try:
-            print(f"Sending to server :: {data}")
-            # pickle dumps преобразовать в байты для отправки
-            self.client.send(pickle.dumps(data))
+            print(f"Sending to server :: {rec_data}")
+            self.client.send(pickle.dumps(rec_data))  # отправляем байты
             return  # Убираем попытку получения ответа
         except socket.error as e:
             print(e)

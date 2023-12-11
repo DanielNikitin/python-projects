@@ -22,14 +22,14 @@ class Player:
         self.delay_between_changes = 1000  # Задержка в миллисекундах (в данном случае 1 секунда)
 
 
-
-
     # ------ TERMINAL DATA
     def __str__(self):
         return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.name}, {self.id})"
 
 
     def draw(self, screen):
+        self.rect = (self.x, self.y, self.width, self.height)
+
         font = pygame.font.Font(pygame.font.get_default_font(), 20)  # Размер шрифта для никнейма
 
         if self.status == "sleep":
