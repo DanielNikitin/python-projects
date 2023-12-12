@@ -1,8 +1,6 @@
 import pickle
 import socket
 
-# Пример 2: Использование pickle с сокетами
-
 # Сервер
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('localhost', 10000))
@@ -13,7 +11,7 @@ client_socket, address = server_socket.accept()
 print(f"Подключено к {address}")
 
 # Отправка данных через сокет с использованием pickle
-data_to_send = {'message': 'Привет, клиент!', 'numbers': [1, 2, 3]}
+data_to_send = {'meow': 'Привет, клиент!', 'numbers': [1, 2, 3], 'player': 'x, y, width, height, id_1'}
 
 serialized_data = pickle.dumps(data_to_send)  # преобразуем в байты
 

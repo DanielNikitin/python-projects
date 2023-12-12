@@ -10,7 +10,14 @@ received_data = client_socket.recv(1024)  # получили байты
 
 loaded_data = pickle.loads(received_data)  # изменение формата в нормальный
 
+meows = loaded_data.get("meow", [])
+numbers = loaded_data.get("numbers", [])
+players = loaded_data.get("player", {})
+
 print(loaded_data)
+print(f"meows: {meows}")
+print(f"numbers: {numbers}")
+print(f"players: {players}")
 
 # Закрытие соединения
 client_socket.close()

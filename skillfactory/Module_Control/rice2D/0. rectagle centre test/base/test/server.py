@@ -19,29 +19,29 @@ except socket.error as e:
 s.listen(24)
 print("SERVER STARTED")
 
+# создаем одно дерево
+spawn_tree()
+print(tree_list)
+
 
 def threaded_client(conn):
-    # pickle dumps преобразовать в байты для отправки
-    # создаем одно дерево
-    tree_list = spawn_tree()
-
-    # отправляем данные клиенту об этом
-    conn.send(pickle.dumps({"trees": tree_list}))
 
     while True:
         try:
-            rec_data = conn.recv(2048)  # получили байты
-            loaded_data = pickle.loads(rec_data)  # изменили байты в нормальный вид
-            tree_list, ore_list, player_data = loaded_data
+            data_to_send = {'trees': 'ja derevo'}
+            serialized_data = pickle.dumps(data_to_send)
 
-            if not rec_data:
+            received_data = conn.recv(2048)  # получили байты
+            loaded_data = pickle.loads(received_data)  # изменили байты в нормальный вид
+
+            if not received_data:
                 print("Disconnected")
                 break
             else:
-                print("Received: ", rec_data)
-                print("Sending : ", {"trees": tree_list})  # Отправляем данные как словарь
+                print("Received: ", loaded_data)
+                print("Sending : ", serialized_data)  # Отправляем данные как словарь
 
-            conn.sendall(pickle.dumps({"trees": tree_list}))  # Отправляем данные как словарь
+            conn.send(serialized_data)  # Отправляем данные
 
         except Exception as e:
             print(f"Error in threaded_client: {e}")
