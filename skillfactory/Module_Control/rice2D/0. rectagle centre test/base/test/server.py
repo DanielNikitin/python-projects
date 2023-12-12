@@ -4,7 +4,6 @@ import pickle
 from _thread import *
 from server_func import *
 
-from player import Player
 
 server_ip = "localhost"
 port = 10000
@@ -17,35 +16,35 @@ try:
 except socket.error as e:
     print(str(e))
 
-
-s.listen(5)
+s.listen(24)
 print("SERVER STARTED")
 
-spawn_tree()
-spawn_ore()
 
-def threaded_client(conn, player):
+def threaded_client(conn):
+    # pickle dumps преобразовать в байты для отправки
+    # создаем одно дерево
+    tree_list = spawn_tree()
+
     # отправляем данные клиенту об этом
-    conn.send(pickle.dumps({"trees": tree_list, "ores": ore_list, "players": player_respawn(player)}))
+    conn.send(pickle.dumps({"trees": tree_list}))
 
     while True:
         try:
             rec_data = conn.recv(2048)  # получили байты
-            loaded_data = pickle.loads(rec_data)  # переводим в нормальный текст
-            player_list[player] = player_data
+            loaded_data = pickle.loads(rec_data)  # изменили байты в нормальный вид
+            tree_list, ore_list, player_data = loaded_data
 
             if not rec_data:
                 print("Disconnected")
                 break
             else:
-
                 print("Received: ", rec_data)
-                print("Sending : ", (tree_list, ore_list, player_list))
-                player_data = list(player_list.values())
+                print("Sending : ", {"trees": tree_list})  # Отправляем данные как словарь
 
-            conn.sendall(pickle.dumps((tree_list, ore_list)))
+            conn.sendall(pickle.dumps({"trees": tree_list}))  # Отправляем данные как словарь
 
-        except:
+        except Exception as e:
+            print(f"Error in threaded_client: {e}")
             break
 
     print("Lost connection")
@@ -56,7 +55,4 @@ while True:
     conn, addr = s.accept()
     print("Connected:", addr)
 
-    # Assuming you have a player instance here, replace it with your actual Player creation logic
-    current_player = Player(0, 0, 50, 50, (255, 0, 0), 1)
-
-    start_new_thread(threaded_client, (conn, current_player))
+    start_new_thread(threaded_client, (conn,))

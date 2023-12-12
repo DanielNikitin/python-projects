@@ -2,14 +2,31 @@ import random
 
 from tree import Tree
 from ore import Ore
+from player import Player
 
 tree_list = []
 ore_list = []
 
+#  Кортеж для хранения игроков
+player_list = {}
+
+# Список имён
+names_list = ["DDFan", "Bob", "typesen", "kotik", "pups", "Bob2"]
+
+#   -------------- PLAYER
+
+def player_respawn(_id):  # создаем персонажа и спавним его в мире
+    x, y = 50, 50
+    width = 50
+    height = 60
+    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+   #name = random.choice(names_list)
+
+    return Player(x, y, width, height, color, _id)  # получаем все данные после респавна
 
 #   -------------- TREE
 def spawn_tree():
-    for _id in range(1, 6):  # Создаем 5 деревьев
+    for _id in range(1, 3):  # Создаем 5 деревьев
         x, y = random.randint(20, 350), random.randint(50, 350)
         width, height = random.randint(10, 20), random.randint(25, 55)
         color = (0, random.randint(0, 255), 0)
@@ -23,9 +40,9 @@ def delete_tree():
         print("Tree {_id} removed")
 
 
-#   -------------- Stone ORE
+#   -------------- ORE
 def spawn_ore():
-    for _id in range(1, 11):  # Создаем 10
+    for _id in range(1, 3):  # Создаем 10
         x, y = random.randint(20, 350), random.randint(50, 350)
         width, height = 20, 20
         color = (128, 128, 128)
