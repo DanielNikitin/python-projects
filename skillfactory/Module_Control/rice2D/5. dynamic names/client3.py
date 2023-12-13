@@ -18,7 +18,7 @@ def redrawWindow(screen, players):
 
 def main():
     run = True
-    n = Network()  # обращаемся к network.py (связующий)
+    n = Network()  # обращаемся к client_network.py (связующий)
     p = n.getP()  # обращаемся к Player из player.py а так же соединяемся с сервером
 
     try:
@@ -34,7 +34,7 @@ def main():
                     run = False
                     pygame.quit()
 
-            p.move()  #  через network.py мы можем обратиться к player.py и выполнить функцию move
+            p.move()  #  через client_network.py мы можем обратиться к player.py и выполнить функцию move
             redrawWindow(screen, players)
 
     except Exception as e:

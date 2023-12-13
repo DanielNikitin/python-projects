@@ -18,7 +18,7 @@ def main():
     run = True
     n = Network()
     p = n.getP()  # Переместите это здесь, чтобы переменная p была определена до использования в цикле
-    players = n.send(p)
+    players = n.send(p)  # отправить состояние игрока через функцию getP
     clock = pygame.time.Clock()
 
     while run:
