@@ -8,7 +8,7 @@ class Network:
         self.server = "localhost"
         self.port = 10000
         self.addr = (self.server, self.port)
-        self.server_bridge = self.conn_load_data()
+        self.server_bridge = self.connect()
         print(f"Server Bridge :: {self.server_bridge}")
 
 
@@ -17,14 +17,23 @@ class Network:
 
 
 #   ----------- CONNECT / LOAD DATA -----------
-    def conn_load_data(self):  #  устанавливает соединение с сервером
+    def connect(self):  #  устанавливает соединение с сервером
         try:
             self.client.connect(self.addr)  # подключаемся к серверу
             print(self.addr)
             return pickle.loads(self.client.recv(2048)) # получаем данные клиента
-        except socket.error:
+        except:
             self.client.close()
             print("** SERVER IS SHUTTED DOWN **")
+
+#   -------- LOAD DATA
+    def load_data(self, rec_data):
+        try:
+            load_data = pickle.loads(self.client.recv(2048))
+            print(f"Received data from server :: {load_data}")
+            return
+        except socket.error as e:
+                print(e)
 
 #   -------- SEND DATA
     def send_data(self, rec_data):

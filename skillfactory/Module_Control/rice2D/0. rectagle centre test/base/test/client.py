@@ -31,12 +31,13 @@ def main():
         while run:
             clock.tick(60)
 
-            received_data = n.get_data()  # Получить полученные данные
+            received_data = n.get_data()  # Получить данные
             loaded_data = pickle.loads(received_data)
+            print(loaded_data)
 
             # Extract trees and ores using the get method
-            trees = loaded_data.get("trees", [])
-            print(f"trees_data: {trees}")
+            #trees = loaded_data.get("trees", [])
+            #print(f"trees_data: {trees}")
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
