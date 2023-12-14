@@ -25,7 +25,7 @@ def player_respawn(_id):
     width = 50
     height = 50
     color = (0, 255, 0)
-    name = '0. rectagle centre pickle_base_server_client_network'
+    name = 'meow'
     return Player(x, y, width, height, color, name, _id)
 
 def threaded_client(conn, player):  # Ожидание подключения клиентов

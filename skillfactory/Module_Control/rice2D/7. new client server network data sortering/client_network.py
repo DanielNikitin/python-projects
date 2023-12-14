@@ -10,6 +10,8 @@ class Network:
         self.addr = (self.server, self.port)
 
         self.server_connect = self.connect()
+        if self.connect is not None:
+            print("CLIENT :: Connected Successfully")
         print(f"Server Data :: {self.server_connect}")
 
     def get_server_data(self):  # используется за счет def connect()
