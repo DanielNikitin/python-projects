@@ -1,9 +1,56 @@
-players_list = {}
+# SERVER
 
-# Пополнение на +1
-player_id = len(players_list) + 5
-new_player_data = {'name': 'Новый игрок', 'score': 0}
+import pickle
 
-players_list[player_id] = new_player_data
+from _thread import *
+from server_config import *
+from server_func import *
 
-print(players_list)
+
+try:
+    server_socket.bind((server_ip, port))
+except socket.error as e:
+    print(str(e))
+server_socket.listen(24)
+print(f"SERVER STARTED :: {server_ip}, {port}")
+
+
+def threaded_client(client_conn, player):
+    player = player_respawn(player)  # respawn in the game world
+
+    while True:
+        try:
+            players_list[player] = player  # adding player into the :: players_list[ключ] = 'value'
+
+            # SEND PLAYER DATA
+            player_data = pickle.dumps({'player': player, 'players_list': players_list})
+            client_conn.send(player_data)
+            print(f"SERVER SEND :: {player_data}")
+
+            # LOAD DATA
+            load_data = pickle.loads(client_conn.recv(2048))
+            print(load_data)
+
+            if not load_data:
+                print("not player_data")
+                break
+            else:
+                # UPDATE PLAYER CONDITION ON THE SERVER
+                update_players = list(players_list.values())
+
+                client_conn.sendall(pickle.dumps(update_players))
+
+        except:
+            break
+
+    print(f"Disconnected :: {player.name}, ID: {player.id}")
+    client_conn.close()
+
+current_player = 0
+while True:  # ожидаем желаемых для подключения к серверу
+    client_conn, addr = server_socket.accept()  # client_conn сокет для общения с подключенным клиентом
+    print(f"Connected: {addr}")
+
+    # Запускаем новый поток для каждого клиента
+    start_new_thread(threaded_client, (client_conn, current_player))
+    current_player += 1

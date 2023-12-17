@@ -21,7 +21,6 @@ class Network:
 
         except:
             self.client.close()
-            #return Player(0, 0, 0, 0, (0, 0, 0), None)
 
     def send(self, data):  # отправляет данные о состоянии игрока серверу и получает обновленные данные о состоянии других игроков.
         try:

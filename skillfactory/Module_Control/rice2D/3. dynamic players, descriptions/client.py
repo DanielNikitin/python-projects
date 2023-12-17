@@ -20,21 +20,22 @@ def main():
     run = True
     n = Network()  # обращаемся к client_network.py (связующий)
     p = n.getP()  # обращаемся к Player из player.py а так же соединяемся с сервером
+    print(f"P: {p}")
 
     try:
         clock = pygame.time.Clock()
 
         while run:
             clock.tick(60)
-            players = n.send(p)  # отправляет данные о состоянии игрока серверу и получаем данные от сервера
-            print(n.send(p))
+            players = n.send(p)
+            print(f"N.SEND(P) :: {n.send(p)}")
 
-            for event in pygame.event.get():  # отслеживаем события
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                     pygame.quit()
 
-            p.move()  #  через client_network.py мы можем обратиться к player.py и выполнить функцию move
+            p.move()
             redrawWindow(screen, players)
 
     except Exception as e:

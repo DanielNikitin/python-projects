@@ -19,17 +19,21 @@ class Network:
 
     def connect(self):
         try:
-            self.client.connect(self.addr)
-            received_data = (self.client.recv(2048))  # получили байты
-            return pickle.loads(received_data)  # изменение формата в нормальный
+            self.client.connect(self.addr)  # подключаемся к серверу
+            return pickle.loads(self.client.recv(2048))  # получаем данные от сервера
         except:
             self.client.close()
             print("** SERVER IS SHUTTED DOWN **")
 
     def send_data(self, received_data):
         try:
-            print(f"NETWORK: "
+
+            print(f"NETWORK :: "
                   f"Sending to Server :: {received_data}\n")
             self.client.send(pickle.dumps(received_data))  # отправляем байты
+
+            updated_data = pickle.loads(self.client.recv(2048))
+            return updated_data
+
         except socket.error as e:
             print(e)

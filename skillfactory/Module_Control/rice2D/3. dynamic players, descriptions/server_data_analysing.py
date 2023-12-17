@@ -35,6 +35,7 @@ def threaded_client(conn, player):  # Ожидание подключения к
         # обновляет состояние игрока и отправляет обновленные данные всем клиентам
         try:
             data = pickle.loads(conn.recv(2048))  # получаем данные от клиента которые уже сериализованны pickle
+            print(data)
             players_list[player] = data  # записываем состояние игрока в players
 
             if not data:
@@ -44,10 +45,11 @@ def threaded_client(conn, player):  # Ожидание подключения к
             else:
 
                 # Отправляем обновленные данные всем клиентам
-                reply = list(players_list.values())
+                #reply = list(players_list.values())
+                updated_data = list(players_list.values())
                 print(f"Sending data to {player} :: {reply}")
 
-            conn.sendall(pickle.dumps(reply))
+            conn.sendall(pickle.dumps(updated_data))
 
         except:
             break

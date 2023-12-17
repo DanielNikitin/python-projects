@@ -16,13 +16,17 @@ def redraw_window(screen, players):
 
 def client_connect():
     run = True
-    n = Network()
-    # LOAD DATA
-    from_server = n.get_server_data()
-    player = from_server.get('player', {})
-    print(f"FROM SERVER :: PLAYER: {player}")
+
     try:
         clock = pygame.time.Clock()
+
+        n = Network()
+
+        # LOAD DATA
+        from_server = n.get_server_data()
+
+        player = from_server.get('player', {})
+        print(f"FROM SERVER :: PLAYER: {player}")
 
         while run:
             clock.tick(60)
