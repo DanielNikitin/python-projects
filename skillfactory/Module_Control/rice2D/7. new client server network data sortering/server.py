@@ -16,33 +16,52 @@ print(f"SERVER STARTED :: {server_ip}, {port}")
 
 
 def threaded_client(client_conn, player):
+<<<<<<< Updated upstream
     player = player_respawn(player)  # respawn in the game world
     players_list[player] = player  # adding player into the :: players_list[ключ] = 'value'
+=======
+    player = player_respawn(player)  # respawn player in the game world
+    print(f"PLAYER SPAWNED :: {player}")
+
+    # SEND PLAYER DATA
+    player_data = pickle.dumps({'player': player, 'players_list': players_list})
+    client_conn.send(player_data)
+    print(f"SERVER SEND :: {player_data}")
+>>>>>>> Stashed changes
 
     while True:
         try:
-            # SEND PLAYER DATA
-            player_data = pickle.dumps({'player': player, 'players_list': players_list})
-            client_conn.send(player_data)
-            print(f"SERVER SEND :: {player_data}")
-
             # LOAD DATA
-            load_data = pickle.loads(client_conn.recv(2048))
-            print(load_data)
+            from_client = pickle.loads(client_conn.recv(2048))
+            #print(from_client)
 
-            if not load_data:
+            players_list[player] = player  # adding player into the :: players_list[ключ] = 'value'
+            #print(f"PLAYERS LIST :: {players_list}")
+
+            #player_data_received = from_client.get('player', {})
+            #print(f"PLAYER DATA FROM CLIENT :: {player_data_received}")
+
+            #players_data_received = from_client.get('players_list', {})
+            #print(f"PLAYERS DATA FROM CLIENT :: {players_data_received}")
+
+            if not from_client:
                 print("not player_data")
                 break
             else:
+<<<<<<< Updated upstream
                 # UPDATE PLAYER CONDITION ON THE SERVER
                 # --------------
                 # --------------
                 # --------------
                 print("else")
+=======
+                reply = list(players_list.values())
+                print(players_list)
+>>>>>>> Stashed changes
 
-        except socket.error as e:
-            print(e)
-        finally:
+            client_conn.send(pickle.dumps(reply))
+
+        except Exception:
             print(f"Disconnected :: {player.name}, ID: {player.id}")
             client_conn.close()
 

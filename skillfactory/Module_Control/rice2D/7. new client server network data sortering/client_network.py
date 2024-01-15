@@ -25,8 +25,9 @@ class Network:
             self.client.close()
             print("** SERVER IS SHUTTED DOWN **")
 
-    def send_data(self, received_data):
+    def send_get_data(self, received_data):
         try:
+<<<<<<< Updated upstream
 
             print(f"NETWORK :: "
                   f"Sending to Server :: {received_data}\n")
@@ -35,5 +36,12 @@ class Network:
             updated_data = pickle.loads(self.client.recv(2048))
             return updated_data
 
+=======
+            self.client.send(pickle.dumps(received_data))  # отправляем байты
+
+            received_data = (self.client.recv(2048))  # получили байты
+            pickle.loads(received_data)  # получаем данные
+            return received_data
+>>>>>>> Stashed changes
         except socket.error as e:
             print(e)

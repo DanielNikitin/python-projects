@@ -9,6 +9,9 @@ print("Ждем подключения клиента...")
 client_socket, address = server_socket.accept()
 print(f"Подключено к {address}")
 
+
+
+
 data_to_send = {'meow': 'Привет, клиент!', 'numbers': [1, 2, 3], 'player': 'x, y, width, height, id_1'}
 serialized_data = pickle.dumps(data_to_send)
 client_socket.send(serialized_data)

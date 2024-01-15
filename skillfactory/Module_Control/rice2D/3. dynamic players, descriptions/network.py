@@ -1,5 +1,6 @@
 import socket
 import pickle
+
 from player import Player
 
 class Network:
@@ -10,26 +11,22 @@ class Network:
         self.addr = (self.server, self.port)
         self.p = self.connect()
 
-    def getP(self):  # подключаем персонажа к серверу и возвращаем данные об персонаже
+    def getP(self):
         return self.p
 
-    def connect(self):  #  устанавливает соединение с сервером и возвращает начальное состояние игрока.
+    def connect(self):
         try:
-
             self.client.connect(self.addr)  # подключаемся к серверу
             return pickle.loads(self.client.recv(2048))  # получаем данные от сервера
-
         except:
             self.client.close()
+            return Player(0, 0, 0, 0, (0, 0, 0), None)
 
-    def send(self, data):  # отправляет данные о состоянии игрока серверу и получает обновленные данные о состоянии других игроков.
+    def send(self, data):
         try:
-
-            print(f"Sending to server :: {data}")
             self.client.send(pickle.dumps(data))
 
             reply = pickle.loads(self.client.recv(2048))
-            print(f"Received from server :: {reply}")
             return reply
 
         except socket.error as e:

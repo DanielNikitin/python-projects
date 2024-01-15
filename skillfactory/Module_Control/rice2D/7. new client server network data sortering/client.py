@@ -24,22 +24,41 @@ def client_connect():
     try:
         clock = pygame.time.Clock()
 
+<<<<<<< Updated upstream
         while run:
             clock.tick(60)
 
             # LOAD DATA
             players = from_server.get('players_list', {})
             print(f"FROM SERVER :: PLAYERS LIST: {players}")
+=======
+        n = Network()
+
+        # LOAD DATA
+        from_server = n.get_server_data()
+
+        print(f"FROM SERVER :: PLAYER: {player}")
+
+        while run:
+            clock.tick(60)
+
+            players = from_server.get
+>>>>>>> Stashed changes
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                     pygame.quit()
 
+<<<<<<< Updated upstream
             player.move()
 
             # SEND DATA
             n.send_data({'players_list': player})
+=======
+            # PLAYER FUNC
+            player.move()
+>>>>>>> Stashed changes
 
             # UPDATE CLIENT SCREEN
             redraw_window(screen, players)

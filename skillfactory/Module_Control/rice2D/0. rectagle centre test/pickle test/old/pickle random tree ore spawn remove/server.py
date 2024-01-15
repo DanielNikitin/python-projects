@@ -26,7 +26,6 @@ spawn_ore()
 s.listen(5)
 print("SERVER STARTED")
 
-
 def threaded_client(conn):
     # отправляем данные клиенту об этом
     conn.send(pickle.dumps((tree_list, ore_list)))

@@ -15,8 +15,8 @@ def redrawWindow(screen, trees, ores):  # рисуем деревья
     screen.fill('gray25')
 
     try:
-        for tree in trees:  # находим дерево в списке деревьев
-            tree.draw(screen)  # отображаем его в игровом мире клиента
+        for tree in trees:
+            tree.draw(screen)
 
         for ore in ores:
             ore.draw(screen)

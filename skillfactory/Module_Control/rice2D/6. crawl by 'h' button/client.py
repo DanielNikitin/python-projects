@@ -6,7 +6,7 @@ height = 500
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
-pygame.init()  # инициализация игры
+pygame.init()
 
 
 def redrawWindow(screen, players):
@@ -18,22 +18,22 @@ def redrawWindow(screen, players):
 
 def main():
     run = True
-    n = Network()  # обращаемся к client_network.py (связующий)
-    p = n.getP()  # обращаемся к Player из player.py а так же соединяемся с сервером
+    n = Network()
+    p = n.getP()
 
     try:
         clock = pygame.time.Clock()
 
         while run:
             clock.tick(60)
-            players = n.send(p)  # отправляет данные о состоянии игрока серверу и получаем данные от сервера
+            players = n.send(p)
 
-            for event in pygame.event.get():  # отслеживаем события
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
                     pygame.quit()
 
-            p.move()  #  через client_network.py мы можем обратиться к player.py и выполнить функцию move
+            p.move()
             p.change_size()
 
             redrawWindow(screen, players)

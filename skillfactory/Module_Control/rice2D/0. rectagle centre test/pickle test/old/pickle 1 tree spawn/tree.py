@@ -11,6 +11,7 @@ class Tree:
         self.id = _id
         self.hp = 2
         self.alive = True
+        self.vel = 1
 
     # ------ TERMINAL DATA
     def __str__(self):
@@ -26,6 +27,19 @@ class Tree:
     def check_death(self):
         if self.hp <= 0:
             print("Tree destroyed")
+
+    def move(self):
+        keys = pygame.key.get_pressed()  # текущее состояние всех клавиш
+
+        if keys[pygame.K_a]:
+            self.x -= self.vel
+        if keys[pygame.K_d]:
+            self.x += self.vel
+        if keys[pygame.K_w]:
+            self.y -= self.vel
+        if keys[pygame.K_s]:
+            self.y += self.vel
+        self.update()
 
     def update(self):
         self.rect = (self.x, self.y, self.width, self.height)

@@ -24,7 +24,7 @@ class Network:
             self.client.close()
             print("** SERVER IS SHUTTED DOWN **")
 
-    def send_data(self, received_data):  # received_data записывает в себя то, что нужно передать
+    def send_data(self, received_data):
         try:
             print(f"NETWORK: "
                   f"Sending to server :: {received_data}\n"

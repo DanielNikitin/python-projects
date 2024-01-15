@@ -1,5 +1,4 @@
-kfzw
-kfzw2
+kfzwMn
 kfzwA
 kfzwa2
 kfzwOP
@@ -12,6 +11,15 @@ Z -33*
 
 
 -------------------
+
+KFZW SWITCHER 
+
+KFZW2 is used (in a 3rd gear pull) until around 4k, after which time it switches 
+back to KFZW (VVT switchover). 
+Easiest way to see what timing table you're in is to log wnwi_w and wnwi2_w. 
+If camshaft angle is ~22KW, that is KFZW2. If camshaft angle is ~0 degrees, that is KFZW.
+
+----------------------
 
 ************** 'more fuel = louder bangs', 'more air = more number of pops', or 'less timing = more rapid pops' etc **************
 
@@ -101,10 +109,10 @@ KFTVSAGNG2
 
 KFNWEGM is like a threshold for fuelcut. When rpms drop, fuelcut is disabled from this value downwards. 
 So if you want gargles and pops for the entire rpm range and all gears, set it higher than your rpm limit for example.
-But its active only when clutch is depressed. At least thats how ive seen it work on Volvos.
+But its active only when clutch is depressed.
 If you want bangs between shifts, lower KFZWMN in the lower load parts.
 
-KFTVSA is the time in seconds i think before fuelcut is activated. But its active only when clutch is depressed. At least thats how ive seen it work on Volvos.
+KFTVSA is the time in seconds i think before fuelcut is activated. But its active only when clutch is depressed.
 If you want bangs between shifts, lower KFZWMN in the lower load parts.
 
 ------------------------------------------------
@@ -126,6 +134,8 @@ when looking at injector time, it's still going to 0ms on overrun.
 
 KFNWEG, which allows the fuel to cut back in depending on gear, coolant temp, and gear.  
 The map is not enabled by default on our cars, to enable you need to set the codeword CWSAWE to 1.
+
+KFTVSA is the time in seconds i think before fuelcut is activated. But its active only when clutch is depressed.
 
 ---------------------------------------------------
 
@@ -154,21 +164,84 @@ KFTVSAKAT - Over-run delay time (2000 all)
 -----------------------------------------------------
 
 
+Bang Bang when A/C is Pressed MED 9.1 Golf 5 2.0TFSI
+
+DNWEK (Delta n für WE bei Klima (AC))
+set to 8000 (constant)
+
+KFTVSA (Verzögerungszeit für Schubabschalten)
+X: -30 to 30 (X: 60 to 90 also)
+Z: 0.00
+
+KFTVSAGI - the same
+
+All -> KFZWMN (Minimal ignition angle)
+Вроде как все параметры Z у этих карт одинаковые. В основном отрицательные значения.
+X: 1750 to 6500
+Y: 10-30%
+Z: -20
 
 
+------------------------------------------------------
+
+Hardcut 2.0TFSI MED 9.1
+
+FUBAOF (Open time for spark gap ignition)
+set to 0 ms
+DNMAXH
+set from 200 to 50
+
+NMAX
+NMAXDV
+NMAXDZ
+NMAXGA
+NMAXDR
+NMAXDVG
+NMAXKR
+NMAXNL
+NMAXOGGA
+set from 6800 to 7000
+
+NMAXHMM (и подобные где малое значение 3500 и т.д. на 500 поднимаем)
+from 4500 to 5000
+
+KFTSRL
+X from 5000 to 6840 and last from 6000 to 6880
+Z last column (6880) to 0.00 (vertical)
 
 
+------------------------------------------- MED 9.1 Stage 1
 
+AFR offset 0.114844
 
+KFMIOP
+Y: 120 to max
+X: 1200 to max
+Z: UP TO 10%
 
+KFMIOPS
+Y: 100 to 150(max)
+X: 1200 RPM to max
+Z: UP TO 7%
 
+KFMIRL
+Y: 70 to max
+X: 1200 to 2500
+Z: UP TO 5%
+Делать 3 ступени, вторая половина Z: 10% третья Z: 15% (до конца по X)
 
+KFVPDKLD
+Y: 0 to 5%
+X: all
+Z: UP TO 40%
+Первая ступень, вторая ступень все остальное в +45%
 
+------------------------------
 
+Pops & bangs on ME9 requires some modifications to simple maps.
 
-
-
-
+1. raise the delay of the fuel cut overrun
+2. Retard the ignition from -15 to -45 degrees on the areas that the negative ignition maps have for the coast down condition.
 
 
 

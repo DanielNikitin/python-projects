@@ -1,5 +1,7 @@
 import pygame
-import keyboard
+#import random
+import time
+
 
 class Player:
     def __init__(self, x, y, width, height, color, name, _id):
@@ -14,44 +16,26 @@ class Player:
         self.name = name
         self.id = _id
 
-        # Инициализируем инвентарь как словарь
-        self.inventory = {"coins": 0}
 
-        # Добавляем атрибут keys для хранения состояния клавиш
-        self.keys = set()
-
-
+    # ------ TERMINAL DATA
     def __str__(self):
-        return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.name})"
+        return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.name}, {self.id})"
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)  # player model
 
-        font = pygame.font.Font(pygame.font.get_default_font(), 20)
-        text = font.render(self.name, True, (0, 0, 0))
-        screen.blit(text, (self.x - -10, self.y - -20))  # nickname coordinate
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, self.rect)
 
     def move(self):
-        keys = pygame.key.get_pressed()
-
-        # Очищаем множество клавиш при каждом движении
-        self.keys.clear()
+        keys = pygame.key.get_pressed()  # текущее состояние всех клавиш
 
         if keys[pygame.K_a]:
             self.x -= self.vel
-
         if keys[pygame.K_d]:
             self.x += self.vel
-
         if keys[pygame.K_w]:
             self.y -= self.vel
-
         if keys[pygame.K_s]:
             self.y += self.vel
-
-        if keyboard.is_pressed('h'):
-            print("data is sended to server")
-
         self.update()
 
     def update(self):
