@@ -1,88 +1,76 @@
 import socket
-from _thread import *
-from player import Player
 import pickle
 import random
 
-server = "localhost"
-port = 10000
+from _thread import *
+from player import Player
+from server_config import *
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
+
 try:
-    s.bind((server, port))
+    s.bind((server_ip, port))
 except socket.error as e:
     print(str(e))
 
-s.listen(5)
-print("Waiting for a connection, Server Started")
+s.listen(24)
+print("SERVER STARTED")
 
-players = {}
-connections = 0
-_id = 0
+#  Кортеж для хранения игроков
+players_list = {}
 
-colors = [(255,0,0),
-		  (255, 128, 0),
-		  (255,255,0),
-		  (128,255,0),
-		  (0,255,0),
-		  (0,255,128),
-		  (0,255,255),
-		  (0, 128, 255),
-		  (0,0,255),
-		  (0,0,255),
-		  (128,0,255),
-		  (255,0,255),
-		  (255,0,128),
-		  (128,128,128),
-		  (0,0,0)]
+# Список имён
+names_list = ["DDFan", "Bob", "typesen", "kotik", "pups", "Bob2"]
 
-def player_respawn(players):
-        x = 50
-        y = 50
-        for player in players:
-            p = players[player]
+def player_respawn(_id):  # создаем персонажа и спавним его в мире
+    x, y = 50, 50
+    width = 50
+    height = 50
+    color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    name = random.choice(names_list)
 
+    return Player(x, y, width, height, color, name, _id)  # получаем все данные после респавна
 
-def threaded_client(conn, player):
-    conn.send(pickle.dumps(players[player]))
-    reply = ""
+def threaded_client(conn, player):  # Ожидание подключения клиентов
+    conn.send(pickle.dumps(player_respawn(player)))  # Клиенту отправляется начальное состояние игрока через pickle
 
-    current_id = _id
-
-    while True:
+    while True:  # Сервер ожидает и принимает данные от клиента,
+        # обновляет состояние игрока и отправляет обновленные данные всем клиентам
         try:
-            data = pickle.loads(conn.recv(2048))  #
-            players[player] = data  #
-            name = data.decode("utf-8")
-            print(f"** {name} **")
-
-            # Setup properties for each new player
-            #color = colors[current_id]
-            #x, y = player_respawn(players)
-            #players[current_id] = {"x": x, "y": y, "color": color, "name": name}  # x, y, color, name
+            data = pickle.loads(conn.recv(2048))  # получаем данные от клиента которые уже сериализованны pickle
+            players_list[player] = data  # записываем состояние игрока в players
 
             if not data:
-                print("Disconnected")
+                print(f"NOT DATA, DISCONNECTED: {player}")
                 break
-            else:
-                reply = players
 
-                #print("Received: ", data)
-                #print("Sending : ", reply)
+            else:
+
+                # Отправляем обновленные данные всем клиентам
+                reply = list(players_list.values())
+                #print(f"Sending data to {player} :: {reply}")
 
             conn.sendall(pickle.dumps(reply))
+
         except:
             break
 
-    print(f"Disconnected")
+    print(f"Disconnected: {player}")
+    #del players_list[player]  # удаляем игрока из мира
+    players_list[player].status = "sleep"  # Устанавливаем статус "sleep"
+
     conn.close()
 
 currentPlayer = 0
-while True:
-    conn, addr = s.accept()
-    print("Connected:", addr)
+while True:  # ожидаем желаемых для подключения к серверу
+    conn, addr = s.accept()  # принимаем их запрос на подключение
+    print(f"Connected: {addr}")
 
+    # Запускаем новый поток для каждого клиента
     start_new_thread(threaded_client, (conn, currentPlayer))
+
+    # Увеличиваем счетчик для следующего игрока
     currentPlayer += 1
