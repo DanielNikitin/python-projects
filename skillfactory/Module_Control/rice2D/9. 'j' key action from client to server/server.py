@@ -21,27 +21,33 @@ def handle_client(connection, player_id):
     player = player_respawn(player_id)
     connection.send(pickle.dumps(player))
 
+    extra_data = {"message": "Это первая информация!"}
+
     while True:
         try:
             received_data = pickle.loads(connection.recv(2048))
             print("Полученные данные:", received_data)
 
-            if isinstance(received_data, dict) and "player" in received_data:
+            if isinstance(received_data, dict):
                 player_data = received_data["player"]
-                message = received_data.get("message", "")
+                message = received_data.get("p_action", "")
+
+                if message == "change_text":
+                    print("Меняем текст на экране")
+                    extra_data = {"message": "Это вторая информация!"}
+
+                elif message == "attack":
+                    print("Игрок атаковал!")
 
                 if isinstance(player_data, Player):
                     players_list[player_id] = player_data
                     reply = list(players_list.values())
 
-                    # Добавляем дополнительные данные на сервере
-                    extra_data = {"message": "Это дополнительные данные с сервера!"}
-
                     # Вывод данных перед отправкой клиенту
                     print(f"Отправляются данные клиенту {player_id}: {reply}")
 
                     # Добавляем задержку перед отправкой данных клиенту
-                    time.sleep(1)
+                    time.sleep(0.01)
 
                     connection.sendall(pickle.dumps((reply, extra_data)))
 
@@ -51,6 +57,7 @@ def handle_client(connection, player_id):
 
     print(f"Отключен: {player_id}")
     # del players_list[player_id]  # удаляем игрока из мира
+    players_list[player_id].status = "sleep"
 
     connection.close()
 

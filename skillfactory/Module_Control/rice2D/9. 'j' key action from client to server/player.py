@@ -53,7 +53,7 @@ class Player:
 
             screen.blit(text, text_rect.topleft)
 
-        elif self.status == 'crowl':
+        elif self.status == 'crouch':
             pygame.draw.rect(screen, self.color, (self.x, self.y, 60, 35))
 
             text = font.render(self.name, True, (0, 0, 0))
@@ -73,7 +73,6 @@ class Player:
                 self.last_status_change_time = current_time  # Обновляет время последнего изменения статуса
 
 
-
     def move(self):
         keys = pygame.key.get_pressed()  # текущее состояние всех клавиш
 
@@ -85,9 +84,6 @@ class Player:
             self.y -= self.vel
         if keys[pygame.K_s]:
             self.y += self.vel
-
-        if keys[pygame.K_j]:
-            self.y -= 50
 
         self.update()
 

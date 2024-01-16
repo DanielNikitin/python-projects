@@ -39,11 +39,17 @@ def main():
                     if event.type == pygame.QUIT:
                         run = False
                         pygame.quit()
+
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_h:
                         print('h')
-                        n.send({"player": p, "message": "Привет, сервер! Я нажал клавишу 'h'"})
+                        n.send({"player": p, "p_action": "attack"})
+                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_j:
+                        print('j')
+                        n.send({"player": p, "p_action": "change_text"})
 
                 p.move()
+                p.change_size()
+
                 redrawWindow(screen, players, extra_data)
 
     except Exception as e:
