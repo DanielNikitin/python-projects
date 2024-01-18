@@ -3,7 +3,7 @@
 
 import contextlib
 with contextlib.redirect_stdout(None):
-    import pygame
+	import pygame
 from client import Network
 import random
 import os
