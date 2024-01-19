@@ -1,0 +1,22 @@
+import pygame
+
+class Tree:
+    def __init__(self, x, y, width, height, color, _id):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.rect = (x,y,width,height)
+        self.hp = 2
+        self.id = _id
+
+    # ------ TERMINAL DATA
+    def __str__(self):
+        return f"Tree({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.id})"
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
+
+    def update(self):
+        self.rect = (self.x, self.y, self.width, self.height)
