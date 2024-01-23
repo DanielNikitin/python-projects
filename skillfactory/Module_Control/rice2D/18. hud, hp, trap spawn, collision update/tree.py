@@ -9,7 +9,6 @@ class Tree:
         self.color = color
         self.rect = (x,y,width,height)
         self.id = _id
-        self.hp = 2
 
         self.collision_radius = 20
         self.collision_visib = True

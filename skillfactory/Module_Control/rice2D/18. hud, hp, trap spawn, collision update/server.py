@@ -13,6 +13,9 @@ from server_config import *
 from player import Player
 from tree import Tree
 from ore import Ore
+from trap import Trap
+
+from collisions import *
 
 # -------- SOCKET SETUP
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -76,73 +79,26 @@ def spawn_ore():
 
     return ore_list
 
-# -------- CIRCLE/RECTANGLE COLLISION DETECT
-def is_rect_collision(obj1, obj2, hard_collision=True):
-    if hard_collision:
-        # Hard collision detection using rectangles
-        return obj1.x < obj2.x + obj2.width and \
-               obj1.x + obj1.width > obj2.x and \
-               obj1.y < obj2.y + obj2.height and \
-               obj1.y + obj1.height > obj2.y
-    else:
-        # Soft collision detection using circle-rectangle collision
-        obj1_center = (obj1.x + obj1.width // 2, obj1.y + obj1.height // 2)
-        obj2_center = (obj2.x + obj2.width // 2, obj2.y + obj2.height // 2)
-        distance_squared = (obj1_center[0] - obj2_center[0])**2 + (obj1_center[1] - obj2_center[1])**2
-        radius_sum_squared = (obj1.collision_radius + obj2.collision_radius)**2
-        return distance_squared < radius_sum_squared
+# -------- TRAP
+def spawn_trap():
+    trap_list = []
+    for _id in range(1, 2):
+        x, y = random.randint(20, 350), random.randint(50, 350)
+        width, height = random.randint(25, 35), random.randint(25, 35)
 
-# -------- RECTANGLE CHECK TOUCHING (RECTANGLE COLLISION)
-def get_touching_side(player, obj):
-    player_left = player.x
-    player_right = player.x + player.width
-    player_top = player.y
-    player_bottom = player.y + player.height
+        # Generate a random shade of red (R component should be in the range [50, 255])
+        red_component = random.randint(50, 255)
+        color = (red_component, 0, 0)
 
-    obj_left = obj.x
-    obj_right = obj.x + obj.width
-    obj_top = obj.y
-    obj_bottom = obj.y + obj.height
+        trap = Trap(x, y, width, height, color, _id)
+        trap_list.append(trap)
 
-    # Check if rectangles are touching
-    if (
-        player_left < obj_right and
-        player_right > obj_left and
-        player_top < obj_bottom and
-        player_bottom > obj_top
-    ):
-        # Calculate overlapping area
-        overlap_left = max(player_left, obj_left)
-        overlap_right = min(player_right, obj_right)
-        overlap_top = max(player_top, obj_top)
-        overlap_bottom = min(player_bottom, obj_bottom)
-
-        # Calculate side lengths of the overlapping area
-        overlap_width = overlap_right - overlap_left
-        overlap_height = overlap_bottom - overlap_top
-
-        # Determine which side has more overlap
-        if overlap_width > overlap_height:
-            if player.y > obj.y:
-                return "top"
-            else:
-                return "bottom"
-        else:
-            if player.x > obj.x:
-                return "left"
-            else:
-                return "right"
-    else:
-        return None
-
-def is_touching(obj1, obj2):
-    touching_side = get_touching_side(obj1, obj2)
-    if touching_side:
-        print(f"Touching: Игрок {obj1.name} касается объекта {obj2.id} стороной {touching_side}")
+    return trap_list
 
 # -------- SPAWN TREE AND ORE
 tree_list = spawn_tree()
 ore_list = spawn_ore()
+trap_list = spawn_trap()
 
 # -------- HANDLE CLIENT
 def handle_client(connection, _id):
@@ -150,7 +106,7 @@ def handle_client(connection, _id):
     player_data = spawn_player(current_id)
     connection.send(pickle.dumps(player_data))
 
-    extra_data = {"message": "RICE2D | CLOSE TEST"}
+    extra_data = {"message": "RICE2D | DEV MODE"}
 
     print(player_data)
 
@@ -171,52 +127,76 @@ def handle_client(connection, _id):
                 player_list[current_id].change_position(position)  # CHANGE POSITION
 
             if received_data.get("client_hud") == "change_text":
-                extra_data = {"message": "Rice2D | Close Test"}
+                extra_data = {"message": "Rice2D | DEV MODE"}
+
 
             # -------- RECTANGLE COLLISION DETECT
-            for player_id, player_obj in player_list.items():
-                if player_id != current_id and is_rect_collision(player_data, player_obj, hard_collision=True):
-                    print(f"Hard Collision: Игрок {current_id} столкнулся с игроком {player_id}")
+            # ---- player
+            for other_id, other_player in player_list.items():
+                if current_id != other_id and rectangle_collision(player_data, other_player):
+                    print(f"Rectangle Collision: Игрок {current_id} столкнулся с игроком {other_id}")
                     continue
-                elif player_id != current_id and is_rect_collision(player_data, player_obj, hard_collision=False):
-                    print(f"Soft Collision: Игрок {current_id} рядом с игроком {player_id}")
+                elif current_id != other_id and circle_collision(player_data, other_player):
+                    print(f"Circle Collision: Игрок {current_id} рядом с игроком {other_id}")
                     continue
 
+            # ---- tree
             for tree in tree_list:
-                if is_rect_collision(player_data, tree, hard_collision=True):
-                    print(f"Hard Collision: Игрок {current_id} столкнулся с деревом {tree.id}")
+                if rectangle_collision(player_data, tree):
+                    print(f"Rectangle Collision: Игрок {current_id} столкнулся с деревом {tree.id}")
                     continue
-                elif is_rect_collision(player_data, tree, hard_collision=False):
-                    print(f"Soft Collision: Игрок {current_id} рядом с деревом {tree.id}")
+                elif circle_collision(player_data, tree):
+                    print(f"Circle Collision: Игрок {current_id} рядом с деревом {tree.id}")
                     continue
 
+            # ---- ore
             for ore in ore_list:
-                if is_rect_collision(player_data, ore, hard_collision=True):
-                    print(f"Hard Collision: Игрок {current_id} столкнулся с рудой {ore.id}")
+                if rectangle_collision(player_data, ore):
+                    print(f"Rectangle Collision: Игрок {current_id} столкнулся с рудой {ore.id}")
                     continue
-                elif is_rect_collision(player_data, ore, hard_collision=False):
-                    #print(f"Soft Collision: Игрок {current_id} рядом с рудой {ore.id}")
+                elif circle_collision(player_data, ore):
+                    print(f"Circle Collision: Игрок {current_id} рядом с рудой {ore.id}")
+                    continue
+
+            # ---- trap
+            for trap in trap_list:
+                if rectangle_collision(player_data, trap):
+                    print(f"Rectangle Collision: Игрок {current_id} столкнулся с ловушкой {trap.id}")
+                    # Обработка коллизии с ловушкой
+                    continue
+                elif circle_collision(player_data, trap):
+                    print(f"Circle Collision: Игрок {current_id} рядом с ловушкой {trap.id}")
+                    # Обработка коллизии с ловушкой
                     continue
 
             # -------- TOUCHING CHECK
-            for player_id, player_obj in player_list.items():
-                if player_id != current_id:
-                    is_touching(player_data, player_obj)
+            # ---- player
+            for other_id, other_player in player_list.items():
+                if current_id != other_id:
+                    is_touching(player_data, other_player)
 
+            # ---- tree
             for tree in tree_list:
                 is_touching(player_data, tree)
 
+            # ---- ore
             for ore in ore_list:
                 is_touching(player_data, ore)
 
+            # ---- trap
+            for trap in trap_list:
+                is_touching(player_data, trap)
 
 
-
+            # -------- DATA TO SEND
             player_list[current_id] = player_data
             reply = list(player_list.values())
 
-            # -------- DATA TO SEND
-            data_to_send = reply, tree_list, ore_list, extra_data
+            data_to_send = (reply,
+                            tree_list,
+                            ore_list,
+                            trap_list,
+                            extra_data)
             #print(f"Отправляются данные клиенту {current_id}: {data_to_send}")
 
             # Отправка упакованных данных клиенту

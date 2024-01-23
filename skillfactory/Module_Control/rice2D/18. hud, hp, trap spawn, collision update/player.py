@@ -30,12 +30,11 @@ class Player:
 
     # -------- TERMINAL DATA
     def __str__(self):
-        return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.name}, {self.id})"
+        return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.name}, ID:{self.id}, HP:{self.hp})"
 
     # -------- DRAW
     def draw(self, screen):
 
-        self.draw_health_bar(screen)  # health bar
         self.draw_collision(screen)  # collision area
 
         font = pygame.font.Font(pygame.font.get_default_font(), 20)  # Размер шрифта для никнейма
@@ -96,22 +95,6 @@ class Player:
 
             self.update()
 
-    # -------- DRAW HEALTH BAR
-    def draw_health_bar(self, screen):
-        bar_width = 50  # ширина
-        bar_height = 5  # высота
-        bar_x = self.x + (self.width - bar_width) / 2  # X левого верхнего угла
-        bar_y = self.y - 7  # Y левого верхнего угла
-
-        # Отрисовываем темно-красный задний фон health bar
-        background_color = (100, 0, 0)  # Темно-красный цвет для заднего фона
-        pygame.draw.rect(screen, background_color, (bar_x, bar_y, bar_width, bar_height))
-
-        # Вычисляем ширину health bar в зависимости от текущего здоровья
-        health_width = int((self.hp / 10) * bar_width)
-        health_color = (255, 0, 0)  # Красный цвет для полосы здоровья
-        pygame.draw.rect(screen, health_color, (bar_x, bar_y, health_width, bar_height))
-
     # -------- DRAW COLLISION AREA
     def draw_collision(self, screen):
         collision_surface = pygame.Surface((2 * self.collision_radius, 2 * self.collision_radius), pygame.SRCALPHA)
@@ -119,25 +102,6 @@ class Player:
                            (self.collision_radius, self.collision_radius), self.collision_radius)
         screen.blit(collision_surface, (
         self.x + self.width // 2 - self.collision_radius, self.y + self.height // 2 - self.collision_radius))
-
-    # -------- RECEIVE DAMAGE
-    def receive_damage(self):
-        if self.hp > 0:
-            self.hp -= 1
-            print(f"{self.name} получил урон. Текущее здоровье: {self.hp}")
-            self.update()
-        else:
-            print(f"{self.name} уже мертв.")
-
-        for tree in tree_list:
-            if is_rect_collision(test_player, tree, hard_collision=True):
-                return True
-
-        for ore in ore_list:
-            if is_rect_collision(test_player, ore, hard_collision=True):
-                return True
-
-        return False
 
     # -------- MOVEMENT
     def move(self, direction):

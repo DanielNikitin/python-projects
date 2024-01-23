@@ -1,5 +1,6 @@
 import pygame
 from network import Network
+from hud import *
 
 width = 500
 height = 500
@@ -20,9 +21,9 @@ def redrawWindow(screen, players, trees, ores, extra_data):
     for ore in ores:
         ore.draw(screen)
 
-    font = pygame.font.SysFont('calibri', 20)
-    text = font.render(extra_data["message"], True, (255, 255, 255))
-    screen.blit(text, (10, 10))
+    # Отображаем HUD для каждого игрока
+    for player in players:
+        render_hud(screen, player, extra_data)
 
     pygame.display.update()
 

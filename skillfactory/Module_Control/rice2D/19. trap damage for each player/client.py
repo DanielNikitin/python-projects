@@ -1,5 +1,6 @@
 import pygame
 from network import Network
+from hud import *
 
 width = 500
 height = 500
@@ -8,11 +9,14 @@ pygame.display.set_caption("Client")
 
 pygame.init()
 
-def redrawWindow(screen, players, trees, ores, extra_data):
+def redrawWindow(players, trees, ores, traps,
+                 info_data, other_data, hp_data):
+
     screen.fill('gray25')
 
     for player in players:
         player.draw(screen)
+        draw_huds(screen, info_data, other_data, hp_data)
 
     for tree in trees:
         tree.draw(screen)
@@ -20,17 +24,13 @@ def redrawWindow(screen, players, trees, ores, extra_data):
     for ore in ores:
         ore.draw(screen)
 
-    font = pygame.font.SysFont('calibri', 20)
-    text = font.render(extra_data["message"], True, (255, 255, 255))
-    screen.blit(text, (10, 10))
+    for trap in traps:
+        trap.draw(screen)
 
     pygame.display.update()
 
 def main():
     run = True
-
-    server = Network()
-    status = server.connect()
 
 # -------- CLIENT KEY CONDITIONS
     client_up = False  # W
@@ -39,14 +39,19 @@ def main():
     client_right = False  # D
     client_crouch = False  # C
 
+    server = Network()
+    conn_status = server.connect()
+
     try:
         clock = pygame.time.Clock()
         while run:
             clock.tick(120)
-            data = server.send({"player": status})
+
+            data = server.send({"dev_data": conn_status})  # send and reply
 
             if data is not None:
-                players, trees, ores, extra_data = data
+                (players, trees, ores, traps,
+                 info_data, other_data, hp_data) = data
                 #print(f"GET DATA :: {data}")
 
                 for event in pygame.event.get():
@@ -107,7 +112,9 @@ def main():
                 if client_crouch:
                     server.send({"client_action": "mode", "position": "Crouch"})  # C
 
-                redrawWindow(screen, players, trees, ores, extra_data)
+
+                redrawWindow(players, trees, ores, traps,
+                             info_data, other_data, hp_data)
 
     except Exception as e:
         print(f"Client Error :: {e}")
