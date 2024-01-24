@@ -24,3 +24,7 @@ class Network:
             return reply
         except socket.error as e:
             print(e)
+
+    def disconnect(self):
+        self.client.close()
+        print("disconnected")

@@ -4,7 +4,7 @@ import time
 
 
 class Player:
-    def __init__(self, x, y, width, height, color, name, _id, hp):
+    def __init__(self, x, y, width, height, color, name, _id, hp, vel):
         self.x = x
         self.y = y
         self.width = width
@@ -13,7 +13,7 @@ class Player:
         self.rect = (x, y, width, height)
         self.name = name
         self.id = _id
-        self.vel = 1.5  # character speed
+        self.vel = vel  # character speed
 
         self.hp = hp  # если hp=hp то берем данные из сервера
 
@@ -31,7 +31,7 @@ class Player:
 
     # -------- TERMINAL DATA
     def __str__(self):
-        return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.name}, ID:{self.id}, HP:{self.hp})"
+        return f"Player({self.x}, {self.y}, {self.width}, {self.height}, {self.color}, {self.name}, ID:{self.id}, HP:{self.hp}, VEL:{self.vel})"
 
     # -------- DRAW
     def draw(self, screen):
@@ -76,10 +76,19 @@ class Player:
             pygame.draw.rect(screen, self.color, (self.x, self.y, 80, 40))  # Примерный размер для "died"
 
             font_died = pygame.font.Font(pygame.font.get_default_font(), 18)
-            text_died = font_died.render("Died", True, (255, 255, 255))  # Белый цвет для текста "Died"
-            text_died_rect = text_died.get_rect(center=(self.x + 40, self.y + 20))
+            text_died = font_died.render("x_x", True, (255, 255, 255))  # Белый цвет для текста "Died"
+            text_died_rect = text_died.get_rect(center=(self.x + 40, self.y + 5))
+
+            font_name = pygame.font.Font(pygame.font.get_default_font(), 12)
+            text_name = font_name.render(self.name, True, (255, 255, 255))  # Белый цвет для текста с именем
+            text_name_rect = text_name.get_rect(center=(self.x + 40, self.y + 25))  # Расположение под надписью "died"
 
             screen.blit(text_died, text_died_rect.topleft)
+            screen.blit(text_name, text_name_rect.topleft)
+
+        elif self.status == 'in_trap':
+            self.vel = 0.5
+
 
     # -------- CHANGE SIZE
     def change_position(self, position):
@@ -100,7 +109,7 @@ class Player:
                 self.height = 35  # высота
                 self.width = 60  # ширина
             else:
-                self.vel = 1.5  # скорость
+                self.vel = 2  # скорость
                 self.height = 70  # высота
                 self.width = 50  # ширина
 

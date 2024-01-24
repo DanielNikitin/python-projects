@@ -16,6 +16,7 @@ from ore import Ore
 from trap import Trap
 
 from collisions import *
+from hp_analyzer import *
 
 # -------- SOCKET SETUP
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,11 +28,10 @@ except socket.error as e:
     print(f"Ошибка при привязке адреса: {e}")
 
 server_socket.listen(24)
-clock = pygame.time.Clock()
-print("СЕРВЕР ЗАПУЩЕН")
+print("СЕРВЕР ВКЛЮЧЕН")
 print("---------------")
-print("")
 
+clock = pygame.time.Clock()
 
 # -------- PLAYER
 player_list = {}
@@ -39,13 +39,14 @@ names_list = ["DDFan", "Bob", "typesen", "kotik", "pups", "Bob2"]
 
 def spawn_player(_id):
     x, y = random.randint(20, 350), random.randint(50, 350)
-    width = random.randint(40, 50)
-    height = random.randint(50, 70)
+    width = 50
+    height = 70
     color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
     name = random.choice(names_list)
     hp = 6
+    vel = 2
 
-    return Player(x, y, width, height, color, name, _id, hp)
+    return Player(x, y, width, height, color, name, _id, hp, vel)
 
 # -------- TREE
 def spawn_tree():
@@ -103,22 +104,26 @@ trap_list = spawn_trap()
 # -------- HANDLE CLIENT
 def handle_client(connection, _id):
     current_id = _id
-    player_data = spawn_player(current_id)
-    connection.send(pickle.dumps(player_data))
+    player_data = spawn_player(current_id)  # data about player to player_data
+    connection.send(pickle.dumps(player_data))  # sending to client player_data
 
     info_data = {'info_data': 'RICE2D | DEV MODE'}
-    other_data = {'other_data': 'hud data is ok'}
+    #other_data = {'other_data': 'hud data is ok'}
 
     # Trap settings
     in_trap = False
     damage_timer = pygame.time.get_ticks()
-    damage_interval = 300  # Интервал урона в миллисекундах (1 секунда)
+    damage_interval = 300  # Интервал урона в миллисекундах (1000 = 1 секунда)
 
     while True:
         try:
-            clock.tick(1024)  # SERVER FPS LIMIT
+            clock.tick(120)  # SERVER FPS LIMIT
+           # fps = clock.get_fps()
+           # if fps > 0:
+          #      print(f"Server FPS: {fps:.2f}")
+
             # -------- RECEIVED DATA
-            received_data = pickle.loads(connection.recv(2048))
+            received_data = pickle.loads(connection.recv(640))
             #print("Полученные данные ::", received_data)
 
             if received_data.get("client_action") == "move":  # MOVE DIRECTION
@@ -165,10 +170,8 @@ def handle_client(connection, _id):
             for trap in trap_list:
                 if rectangle_collision(player_data, trap):
                     if not in_trap:
-                        # print(f"Rectangle Collision: Игрок {current_id} столкнулся с ловушкой {trap.id}")
-                        player_data.vel = 0.5
-                        other_data = {"other_data": "you are in trap"}
                         in_trap = True
+                        print(in_trap)
 
             # Проверка таймера для урона
             if in_trap and pygame.time.get_ticks() - damage_timer >= damage_interval:
@@ -178,8 +181,7 @@ def handle_client(connection, _id):
             # Проверка, если игрок вышел из ловушки
             if not any(rectangle_collision(player_data, trap) for trap in trap_list):
                 in_trap = False
-                player_data.vel = 1.5
-                other_data = {"other_data": "you are lucky man"}
+                print(in_trap)
 
             # -------- TOUCHING CHECK
             # ---- player
@@ -200,14 +202,8 @@ def handle_client(connection, _id):
                 is_touching(player_data, trap)
 
             # -------- PLAYER ANALYSING
-            hp_data = {'hp_data': str(player_data.hp)}  # player hp data for HUD
-
-            # Player HP check
-            if player_data.hp <= 0:
-                hp_data = {'hp_data': 'YOU DIED'}
-                player_data.status = 'died'
-                player_data.vel = 0
-                # остальные действия
+            hp_data = analyze_player_health(player_data)
+            other_data = {'other_data': str(player_data.vel)}
 
             # -------- DATA TO SEND
             # Обновление информации о текущем игроке в словаре player_list
@@ -236,12 +232,16 @@ def handle_client(connection, _id):
     print("")
 
     if current_id in player_list:
-        player_list[current_id].status = "sleep"
+        if player_list[current_id].status != "died":
+            player_list[current_id].status = "sleep"
     connection.close()
 
 # -------- WAITING CONNECTIONS
 _id = 0
 while True:
+    print("Ожидаем подключения")
+    print("---------------")
+
     client_connection, client_address = server_socket.accept()
     print(f"Подключен: {client_address}")
 
