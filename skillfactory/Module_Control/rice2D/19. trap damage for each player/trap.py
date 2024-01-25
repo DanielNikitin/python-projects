@@ -1,4 +1,5 @@
 import pygame
+import time
 
 class Trap:
     def __init__(self, x, y, width, height, color, _id):
@@ -12,6 +13,10 @@ class Trap:
 
         self.collision_radius = 20
         self.collision_visib = True
+
+        self.status = False
+
+        self.damage_timer = pygame.time.get_ticks()
 
     # ------ TERMINAL DATA
     def __str__(self):
@@ -31,3 +36,12 @@ class Trap:
 
     def update(self):
         self.rect = (self.x, self.y, self.width, self.height)
+
+    def apply_damage(self, player_data):
+        damage_interval = 300  # Интервал урона в миллисекундах (1000 = 1 секунда)
+
+        # Проверка таймера для урона
+        if self.status and pygame.time.get_ticks() - self.damage_timer >= damage_interval:
+            player_data.hp -= 1
+            player_data.vel = 0.5
+            self.damage_timer = pygame.time.get_ticks()  # Сбрасываем таймер урона

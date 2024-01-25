@@ -37,19 +37,16 @@ def get_touching_side(player, obj):
         player_bottom > obj_top
     ):
 
-        # Calculate overlapping area
         # если прямоугольники пересекаются, то рассчитывается область перекрытия
         overlap_left = max(player_left, obj_left)
         overlap_right = min(player_right, obj_right)
         overlap_top = max(player_top, obj_top)
         overlap_bottom = min(player_bottom, obj_bottom)
 
-        # Calculate side lengths of the overlapping area
         # рассчитываются длины сторон этой области перекрытия
         overlap_width = overlap_right - overlap_left
         overlap_height = overlap_bottom - overlap_top
 
-        # Determine which side has more overlap
         # определяется, по какой стороне больше перекрытия
         if overlap_width > overlap_height:
             # В зависимости от того, с какой стороны больше перекрытие,

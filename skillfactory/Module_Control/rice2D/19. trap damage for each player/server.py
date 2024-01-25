@@ -5,8 +5,7 @@ import pickle
 import time
 import random
 import math
-
-from _thread import *
+import _thread
 
 from server_config import *
 
@@ -17,6 +16,10 @@ from trap import Trap
 
 from collisions import *
 from hp_analyzer import *
+
+# Границы мира
+world_width = 500
+world_height = 500
 
 # -------- SOCKET SETUP
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -34,25 +37,23 @@ print("---------------")
 clock = pygame.time.Clock()
 
 # -------- PLAYER
-player_list = {}
 names_list = ["DDFan", "Bob", "typesen", "kotik", "pups", "Bob2"]
 
 def spawn_player(_id):
-    x, y = random.randint(20, 350), random.randint(50, 350)
+    x, y = random.randint(20, 480), random.randint(20, 480)
     width = 50
     height = 70
     color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
     name = random.choice(names_list)
     hp = 6
     vel = 2
-
     return Player(x, y, width, height, color, name, _id, hp, vel)
 
 # -------- TREE
 def spawn_tree():
     tree_list = []
     for _id in range(1, 2):
-        x, y = random.randint(20, 350), random.randint(50, 350)
+        x, y = random.randint(20, 480), random.randint(20, 480)
         width, height = random.randint(10, 20), random.randint(25, 55)
 
         # Generate a random shade of green
@@ -61,14 +62,13 @@ def spawn_tree():
 
         tree = Tree(x, y, width, height, color, _id)
         tree_list.append(tree)
-
     return tree_list
 
 # -------- ORE
 def spawn_ore():
     ore_list = []
     for _id in range(1, 2):
-        x, y = random.randint(20, 350), random.randint(50, 350)
+        x, y = random.randint(20, 480), random.randint(20, 480)
         width, height = 30, 30
 
         # Generate a random shade of grey
@@ -77,14 +77,13 @@ def spawn_ore():
 
         ore = Ore(x, y, width, height, color, _id)
         ore_list.append(ore)
-
     return ore_list
 
 # -------- TRAP
 def spawn_trap():
     trap_list = []
     for _id in range(1, 2):
-        x, y = random.randint(20, 350), random.randint(50, 350)
+        x, y = random.randint(20, 480), random.randint(20, 480)
         width, height = random.randint(25, 35), random.randint(25, 35)
 
         # Generate a random shade of red (R component should be in the range [50, 255])
@@ -93,10 +92,10 @@ def spawn_trap():
 
         trap = Trap(x, y, width, height, color, _id)
         trap_list.append(trap)
-
     return trap_list
 
-# -------- SPAWN TREE AND ORE
+# -------- OBJECTS LISTS
+player_list = {}
 tree_list = spawn_tree()
 ore_list = spawn_ore()
 trap_list = spawn_trap()
@@ -110,17 +109,9 @@ def handle_client(connection, _id):
     info_data = {'info_data': 'RICE2D | DEV MODE'}
     #other_data = {'other_data': 'hud data is ok'}
 
-    # Trap settings
-    in_trap = False
-    damage_timer = pygame.time.get_ticks()
-    damage_interval = 300  # Интервал урона в миллисекундах (1000 = 1 секунда)
-
     while True:
         try:
             clock.tick(120)  # SERVER FPS LIMIT
-           # fps = clock.get_fps()
-           # if fps > 0:
-          #      print(f"Server FPS: {fps:.2f}")
 
             # -------- RECEIVED DATA
             received_data = pickle.loads(connection.recv(640))
@@ -169,19 +160,17 @@ def handle_client(connection, _id):
             # ---- trap
             for trap in trap_list:
                 if rectangle_collision(player_data, trap):
-                    if not in_trap:
-                        in_trap = True
-                        print(in_trap)
+                    trap.status = True
+                    trap.apply_damage(player_data)
 
-            # Проверка таймера для урона
-            if in_trap and pygame.time.get_ticks() - damage_timer >= damage_interval:
-                player_data.hp -= 1
-                damage_timer = pygame.time.get_ticks()  # Сбрасываем таймер урона
+                elif not rectangle_collision(player_data, trap):
+                    if player_data.status != "crouch":
+                        trap.status = False
+                        player_data.vel = 2
 
-            # Проверка, если игрок вышел из ловушки
-            if not any(rectangle_collision(player_data, trap) for trap in trap_list):
-                in_trap = False
-                print(in_trap)
+                if circle_collision(player_data, trap):
+                    continue
+
 
             # -------- TOUCHING CHECK
             # ---- player
@@ -223,6 +212,11 @@ def handle_client(connection, _id):
             # Отправка упакованных данных клиенту
             connection.sendall(pickle.dumps(data_to_send))
 
+            if FPS_Counter:
+                fps = clock.get_fps()
+                if fps > 0:
+                    print(f"Server FPS[{player_data.id}]: {fps:.2f}")
+
         except Exception as e:
             print(f"Ошибка обработки данных :: {e}")
             break
@@ -240,10 +234,10 @@ def handle_client(connection, _id):
 _id = 0
 while True:
     print("Ожидаем подключения")
-    print("---------------")
 
     client_connection, client_address = server_socket.accept()
     print(f"Подключен: {client_address}")
+    print("---------------")
 
-    start_new_thread(handle_client, (client_connection, _id))
+    _thread.start_new_thread(handle_client, (client_connection, _id))
     _id += 1

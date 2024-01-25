@@ -1,5 +1,4 @@
 import pygame
-import numba
 
 def info_hud(screen, info_data):
     width = 5
