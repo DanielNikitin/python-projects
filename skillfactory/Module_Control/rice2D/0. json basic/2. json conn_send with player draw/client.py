@@ -1,4 +1,5 @@
 import pygame
+
 from network import Network
 
 pygame.init()
@@ -13,18 +14,14 @@ pygame.display.set_caption("Client")
 
 clock = pygame.time.Clock()
 
-# Цвета
-black = (0, 0, 0)
-blue = (0, 0, 255)
-
 
 def draw_window(screen, blue, player_rect):
     screen.fill((0, 0, 0))
+    clock.tick(60)
 
     pygame.draw.rect(screen, blue, player_rect)
 
-    pygame.display.flip()
-    clock.tick(60)
+    pygame.display.update()
 
 
 def main():
@@ -39,6 +36,8 @@ def main():
     rect_y = (SCREEN_HEIGHT - rect_height) // 2
     player_rect = pygame.Rect(rect_x, rect_y, rect_width, rect_height)
 
+    blue = (0, 0, 255)
+
     try:
         while run:
             for event in pygame.event.get():
@@ -46,7 +45,7 @@ def main():
                     run = False
 
             # -------- DATA TO SEND
-            network.send_data({"action": "move_right"})
+            #network.send_data({"action": "move_right"})
 
             # -------- RECEIVED DATA
             received_data = network.receive_data()
