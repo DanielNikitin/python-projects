@@ -13,6 +13,10 @@ clock = pygame.time.Clock()
 def handle_client(client_socket, _id):
     current_id = _id
 
+    player_data = {"player": "Дата об игроке"}
+    player_data_send = json.dumps(player_data).encode('utf-8')
+    client_socket.send(player_data_send)
+
     try:
         while True:
             clock.tick(120)  # Server FPS
@@ -33,8 +37,12 @@ def handle_client(client_socket, _id):
                 print(f"Client [{current_id}] requested disconnect")
                 break
 
+            # Check for disconnect command
+            if decoded_data.get("action") == "move_right":
+                print(f"Client [{current_id}] want to move right")
+
             # -------- DATA TO SEND
-            reply = {"players": "Дата для отправки"}
+            reply = {"players": "Дата для об игроках"}
             data_to_send = json.dumps(reply).encode('utf-8')
             client_socket.send(data_to_send)
 
@@ -57,7 +65,7 @@ def start_server():
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         server.bind((server_ip, port))
-        server.listen(5)
+        server.listen(25)
         print(f"{server}")
         print("Server listening for connections...")
 
@@ -73,5 +81,5 @@ def start_server():
     except socket.error as e:
         print(f"Ошибка при привязке адреса: {e}")
 
-if __name__ == "__main__":
-    start_server()
+
+start_server()
