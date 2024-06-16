@@ -1,4 +1,0 @@
-KFZW2 is used (in a 3rd gear pull) until around 4k, after which time it switches 
-back to KFZW (VVT switchover). 
-Easiest way to see what timing table you're in is to log wnwi_w and wnwi2_w. 
-If camshaft angle is ~22KW, that is KFZW2. If camshaft angle is ~0 degrees, that is KFZW.
