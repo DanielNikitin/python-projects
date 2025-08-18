@@ -46,21 +46,20 @@ def load_spray_pattern(filename):
 
 #=== MODES FOR MOUSE BUTTON
 mode_index = 0  # текущий режим
-MODES = ["AI_OFF", "AI_ON", "AI/RECOIL_ON", "RECOIL_OFF"]
+MODES = ["AI_OFF", "AI_ON", "AI/RECOIL_ON"]
 
 # SWITCH MODE
 def switch_mode():
     global mode_index
     mode_index = (mode_index + 1) % len(MODES)
     mode = MODES[mode_index]
-    #print(f"[MODE] Switched to: {mode}")
+    print(f"[MODE] Switched to: {mode}")
 
     # Цвета прицела в зависимости от режима
     colors = {
         "AI_OFF": "red",
         "AI_ON": "hotpink",
-        "AI/RECOIL_ON": "purple",
-        "RECOIL_OFF": "grey"
+        "AI/RECOIL_ON": "purple"
     }
 
     # Логика переключения режимов
@@ -78,11 +77,6 @@ def switch_mode():
         config.AimToggle = True
         config.recoil_control = True
         #winsound.Beep(1200, 100)
-
-    elif mode == "RECOIL_OFF":
-        config.AimToggle = True
-        config.recoil_control = False
-        #winsound.Beep(600, 100)
 
     # Обновление надписи
     if 'mode_label' in globals():
@@ -130,7 +124,7 @@ class Config:
         self.Running = True
         self.AimToggle = True
         self.delay = 0.5 # shoot delay
-        self.radius = 8 # crosshair size
+        self.radius = 6 # crosshair size
 
         # AIM parameters
         self.target_offset_y = 0
