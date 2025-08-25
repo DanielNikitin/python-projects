@@ -13,7 +13,7 @@ import mss
 import random
 import winsound
 
-# добавить в settings к оружию индивидуальную настройку shoot delay
+# добавить в settings к оружию индивидуальную настройку shoot delay для автоматической стрельбы
 
 # for showing Ai work in GUI
 from PIL import Image, ImageTk
@@ -523,7 +523,6 @@ def toggle_recoil_state():
 
 # SHOW AI WORK ON GUI MENU
 def update_gui_ai_frame(frame):
-
     if config.show_debug_window and 'ai_image_label' in globals():
         try:
             # BGR to RGB
@@ -534,7 +533,7 @@ def update_gui_ai_frame(frame):
             ai_image_label.configure(image=photo)
             ai_image_label.image = photo
         except:
-            pass
+            print("window is not active")
 
 # MAIN
 def main():

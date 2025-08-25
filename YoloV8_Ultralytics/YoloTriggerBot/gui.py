@@ -1,57 +1,75 @@
-from customtkinter import *
 import tkinter as tk
+from tkinter import ttk
+from config import config
+from patterns import load_spray_pattern, save_spray_pattern
+from recoil import update_random_range, toggle_recoil_state
+from fire import fire
 
-def start_gui(config):
-    set_appearance_mode("Dark")
-    set_default_color_theme("blue")
+# Global variables for GUI
+ai_image_label = None
+recoil_var = None
+mode_label = None
 
-    root = CTk()
-    root.title("New GUI")
-    root.geometry("400x500")
+mode_index = 0
+MODES = ["AI_OFF", "AI_ON", "AI/RECOIL_ON"]
 
-    CTkLabel(root, text="GUI v2.0", font=("Helvetica", 16)).pack(pady=10)
+def switch_mode():
+    global mode_index
+    mode_index = (mode_index + 1) % len(MODES)
+    mode = MODES[mode_index]
+    colors = {"AI_OFF": "red", "AI_ON": "hotpink", "AI/RECOIL_ON": "purple"}
 
-    # === Вкладки (TabView) ===
-    tabview = CTkTabview(root, width=380, height=400)
-    tabview.pack(pady=10)
+    if mode == "AI_OFF":
+        config.AimToggle = False
+        config.recoil_control = False
+    elif mode == "AI_ON":
+        config.AimToggle = True
+        config.recoil_control = False
+    elif mode == "AI/RECOIL_ON":
+        config.AimToggle = True
+        config.recoil_control = True
 
-    tabview.add("Aim Settings")
-    tabview.add("Recoil Settings")
+    if mode_label:
+        mode_label.config(text=f"[MODE] {mode}", fg=colors[mode])
+    if hasattr(config, 'canvas') and hasattr(config, 'fovC'):
+        try:
+            config.canvas.itemconfig(config.fovC, outline=colors[mode])
+        except:
+            pass
+    if recoil_var:
+        recoil_var.set(config.recoil_control)
 
-    # === Aim Settings tab ===
-    aim_tab = tabview.tab("Aim Settings")
-    CTkLabel(aim_tab, text="Aim Settings", font=("Helvetica", 14)).pack(pady=10)
+def CreateOverlay():
+    global ai_image_label, recoil_var, mode_label
 
-    # --- Show AI Window checkbox ---
-    ai_var = IntVar(value=int(config.show_debug_window))
-    def toggle_ai_window():
-        config.show_debug_window = bool(ai_var.get())
+    root = tk.Tk()
+    root.title("Menu")
+    root.geometry('250x850')
 
-    CTkCheckBox(aim_tab, text="Show AI Window", variable=ai_var, command=toggle_ai_window).pack(anchor='w', padx=20)
+    # Tabs
+    notebook = ttk.Notebook(root)
+    notebook.pack(expand=True, fill='both')
+    main_tab = tk.Frame(notebook)
+    notebook.add(main_tab, text="🎯 Aim Settings")
+    recoil_tab = tk.Frame(notebook)
+    notebook.add(recoil_tab, text="🌀 Recoil Pattern")
 
-    # --- Show FPS checkbox ---
-    fps_var = IntVar(value=int(config.show_fps))
-    def toggle_fps():
-        config.show_fps = bool(fps_var.get())
+    # AI image
+    ai_image_label = tk.Label(root)
+    ai_image_label.pack()
+    # Recoil checkbox
+    recoil_var = tk.IntVar(value=config.recoil_control)
+    tk.Checkbutton(main_tab, text="Recoil", variable=recoil_var, command=toggle_recoil_state).pack()
 
-    CTkCheckBox(aim_tab, text="Show FPS", variable=fps_var, command=toggle_fps).pack(anchor='w', padx=20)
-
-    # === Recoil Settings tab ===
-    recoil_tab = tabview.tab("Recoil Settings")
-    CTkLabel(recoil_tab, text="Recoil Settings", font=("Helvetica", 14)).pack(pady=10)
-
-    # --- Recoil Control checkbox ---
-    recoil_var = IntVar(value=int(config.recoil_control))
-    def toggle_recoil():
-        config.recoil_control = bool(recoil_var.get())
-
-    CTkCheckBox(recoil_tab, text="Enable Recoil Control", variable=recoil_var, command=toggle_recoil).pack(anchor='w', padx=20)
-
-    # === Quit Button ===
-    def quit_program():
-        config.Running = False
-        root.destroy()
-
-    CTkButton(root, text="Выход", command=quit_program).pack(pady=10)
+    # Overlay
+    overlay = tk.Toplevel(root)
+    overlay.geometry(f'150x150+{config.center_x - config.radius}+{config.center_y - config.radius}')
+    overlay.overrideredirect(True)
+    overlay.attributes('-topmost', True)
+    overlay.attributes('-transparentcolor', 'blue')
+    canvas = tk.Canvas(overlay, width=150, height=150, bg='blue', bd=0, highlightthickness=0)
+    canvas.pack()
+    config.canvas = canvas
+    config.fovC = canvas.create_oval(0, 0, config.radius*2, config.radius*2, outline='purple')
 
     root.mainloop()
